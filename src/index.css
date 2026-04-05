@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;0,9..144,800;1,9..144,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: #f5f2ed;
+  color: #2d2a26;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c5bfb7; border-radius: 4px; }
+
+input:focus, textarea:focus {
+  border-color: #3D8B7A !important;
+  box-shadow: 0 0 0 3px rgba(61,139,122,0.12);
+  outline: none;
+}
