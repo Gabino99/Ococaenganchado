@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CATEGORIES, TIPOS } from '../data';
+import { addItem } from '../services/firestore';
 
 const inputStyle = {
   width: "100%",
@@ -12,7 +13,6 @@ const inputStyle = {
   color: "#2d2a26",
   outline: "none",
   boxSizing: "border-box",
-  transition: "border-color 0.2s",
 };
 
 const labelStyle = {
@@ -25,156 +25,210 @@ const labelStyle = {
   textTransform: "uppercase",
 };
 
-export default function NewItemModal({ open, onClose, onSubmit }) {
-  const [form, setForm] = useState({
-    titulo: "",
-    descripcion: "",
-    categoria: "",
-    tipo: "venta",
-    precio: "",
-    autor: "",
-  });
+export default function NewItemModal({ open, onClose, user, profile }) {
+  const [titulo, setTitulo] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [tipo, setTipo] = useState("venta");
+  const [precio, setPrecio] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   if (!open) return null;
 
-  const handleSubmit = () => {
-    if (!form.titulo || !form.categoria || !form.autor) return;
-    onSubmit({
-      ...form,
-      id: Date.now(),
-      precio: form.precio ? parseInt(form.precio) : null,
-      fecha: "Justo ahora",
-      imagen: Math.floor(Math.random() * 8),
-    });
-    setForm({ titulo: "", descripcion: "", categoria: "", tipo: "venta", precio: "", autor: "" });
-    onClose();
+  const handleSubmit = async () => {
+    if (!titulo.trim() || !categoria) {
+      setError("Completá el título y la categoría");
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      const item = {
+        titulo: titulo.trim(),
+        descripcion: descripcion.trim(),
+        categoria,
+        tipo,
+        precio: tipo === "venta" && precio ? parseInt(precio) : null,
+        imagen: Math.floor(Math.random() * 8),
+        autorId: user.uid,
+        autorNombre: profile?.nombre || user.displayName || "Anónimo",
+        autorTelefono: profile?.telefono || "",
+        autorEmail: user.email || "",
+        fecha: "Justo ahora",
+      };
+
+      await addItem(item);
+      resetAndClose();
+    } catch (err) {
+      console.error(err);
+      setError("Error al publicar. Intentá de nuevo.");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const canSubmit = form.titulo && form.categoria && form.autor;
+  const resetAndClose = () => {
+    setTitulo("");
+    setDescripcion("");
+    setCategoria("");
+    setTipo("venta");
+    setPrecio("");
+    setError(null);
+    onClose();
+  };
 
   return (
     <div
       style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 1000,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(30,28,25,0.55)",
-        backdropFilter: "blur(6px)",
+        position: "fixed", inset: 0, zIndex: 1000,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: "rgba(30,28,25,0.55)", backdropFilter: "blur(6px)",
         animation: "fadeIn 0.2s ease",
       }}
-      onClick={onClose}
+      onClick={resetAndClose}
     >
       <div
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
         style={{
-          background: "#fffdf9",
-          borderRadius: 20,
-          padding: "28px 24px 20px",
-          width: "min(420px, 92vw)",
-          maxHeight: "85vh",
-          overflowY: "auto",
+          background: "#fffdf9", borderRadius: 20,
+          padding: "24px 20px 20px",
+          width: "min(440px, 94vw)", maxHeight: "88vh", overflowY: "auto",
           boxShadow: "0 24px 60px rgba(0,0,0,0.25)",
           animation: "slideUp 0.3s ease",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <h2 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 22, color: "#2d2a26" }}>Publicar artículo</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#999", padding: 4 }}>✕</button>
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <h2 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 20, color: "#2d2a26" }}>
+            Publicar artículo
+          </h2>
+          <button onClick={resetAndClose}
+            style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999", padding: 4 }}>✕</button>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div>
-            <label style={labelStyle}>Título *</label>
-            <input style={inputStyle} placeholder="¿Qué estás ofreciendo?" value={form.titulo} onChange={(e) => setForm({ ...form, titulo: e.target.value })} />
-          </div>
-          <div>
-            <label style={labelStyle}>Descripción</label>
-            <textarea style={{ ...inputStyle, minHeight: 70, resize: "vertical" }} placeholder="Detalle del estado, cantidad, etc." value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
-          </div>
-          <div>
-            <label style={labelStyle}>Categoría *</label>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {CATEGORIES.map((c) => (
+        {/* Publishing as */}
+        <div style={{
+          padding: "8px 12px", borderRadius: 10, background: "#f0faf7",
+          border: "1px solid #3D8B7A30", fontSize: 12, color: "#3D7A3E",
+          marginBottom: 14, fontWeight: 600,
+        }}>
+          📝 Publicando como <strong>{profile?.nombre || user?.displayName || "Usuario"}</strong>
+        </div>
+
+        {/* Title */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={labelStyle}>Título del artículo *</label>
+          <input
+            style={inputStyle}
+            placeholder="Ej: Mesa de comedor rústica"
+            value={titulo}
+            onChange={e => setTitulo(e.target.value)}
+          />
+        </div>
+
+        {/* Description */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={labelStyle}>Descripción</label>
+          <textarea
+            style={{ ...inputStyle, minHeight: 70, resize: "vertical" }}
+            placeholder="Describí el artículo, condición, medidas..."
+            value={descripcion}
+            onChange={e => setDescripcion(e.target.value)}
+          />
+        </div>
+
+        {/* Category */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={labelStyle}>Categoría *</label>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+            {CATEGORIES.map(cat => {
+              const active = categoria === cat.id;
+              return (
                 <button
-                  key={c.id}
-                  onClick={() => setForm({ ...form, categoria: c.id })}
+                  key={cat.id}
+                  onClick={() => setCategoria(cat.id)}
                   style={{
-                    padding: "6px 12px",
-                    borderRadius: 20,
-                    border: form.categoria === c.id ? `2px solid ${c.color}` : "1.5px solid #d5d0c8",
-                    background: form.categoria === c.id ? c.color + "15" : "transparent",
-                    fontSize: 13,
-                    cursor: "pointer",
-                    color: form.categoria === c.id ? c.color : "#6b6560",
-                    fontWeight: form.categoria === c.id ? 700 : 400,
-                    transition: "all 0.15s",
+                    padding: "5px 10px", borderRadius: 16,
+                    border: active ? `2px solid ${cat.color}` : "1.5px solid #d5d0c8",
+                    background: active ? cat.color + "15" : "transparent",
+                    fontSize: 12, cursor: "pointer",
+                    color: active ? cat.color : "#6b6560",
+                    fontWeight: active ? 700 : 400,
                   }}
                 >
-                  {c.icon} {c.label}
+                  {cat.icon} {cat.label}
                 </button>
-              ))}
-            </div>
+              );
+            })}
           </div>
-          <div>
-            <label style={labelStyle}>Tipo de intercambio</label>
-            <div style={{ display: "flex", gap: 8 }}>
-              {TIPOS.map((t) => (
+        </div>
+
+        {/* Type */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={labelStyle}>Tipo de intercambio</label>
+          <div style={{ display: "flex", gap: 6 }}>
+            {TIPOS.map(t => {
+              const active = tipo === t.id;
+              return (
                 <button
                   key={t.id}
-                  onClick={() => setForm({ ...form, tipo: t.id })}
+                  onClick={() => setTipo(t.id)}
                   style={{
-                    flex: 1,
-                    padding: "8px 0",
-                    borderRadius: 10,
-                    border: form.tipo === t.id ? `2px solid ${t.color}` : "1.5px solid #d5d0c8",
-                    background: form.tipo === t.id ? t.color + "15" : "transparent",
-                    fontSize: 13,
-                    fontWeight: form.tipo === t.id ? 700 : 400,
-                    cursor: "pointer",
-                    color: form.tipo === t.id ? t.color : "#6b6560",
-                    transition: "all 0.15s",
+                    flex: 1, padding: "7px 0", borderRadius: 8,
+                    border: active ? `2px solid ${t.color}` : "1.5px solid #d5d0c8",
+                    background: active ? t.color + "12" : "transparent",
+                    fontSize: 13, fontWeight: active ? 700 : 400,
+                    cursor: "pointer", color: active ? t.color : "#8a847d",
                   }}
                 >
                   {t.label}
                 </button>
-              ))}
-            </div>
-          </div>
-          {form.tipo === "venta" && (
-            <div>
-              <label style={labelStyle}>Precio (₡)</label>
-              <input style={inputStyle} type="number" placeholder="Ej: 5000" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} />
-            </div>
-          )}
-          <div>
-            <label style={labelStyle}>Tu nombre *</label>
-            <input style={inputStyle} placeholder="¿Cómo te conocen en Ococa?" value={form.autor} onChange={(e) => setForm({ ...form, autor: e.target.value })} />
+              );
+            })}
           </div>
         </div>
 
+        {/* Price (only for sale) */}
+        {tipo === "venta" && (
+          <div style={{ marginBottom: 12 }}>
+            <label style={labelStyle}>Precio (₡)</label>
+            <input
+              style={inputStyle}
+              type="number"
+              placeholder="Ej: 5000"
+              value={precio}
+              onChange={e => setPrecio(e.target.value)}
+            />
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div style={{
+            padding: "10px 12px", borderRadius: 10, background: "#FFF0ED",
+            border: "1px solid #E07A5F40", fontSize: 13, color: "#C44D3D",
+            marginBottom: 12,
+          }}>
+            {error}
+          </div>
+        )}
+
+        {/* Submit */}
         <button
           onClick={handleSubmit}
-          disabled={!canSubmit}
+          disabled={saving}
           style={{
-            width: "100%",
-            marginTop: 20,
-            padding: "13px 0",
-            borderRadius: 12,
-            border: "none",
-            background: !canSubmit ? "#ccc" : "#3D8B7A",
-            color: "#fff",
-            fontSize: 15,
-            fontWeight: 700,
-            cursor: !canSubmit ? "not-allowed" : "pointer",
+            width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
+            background: saving ? "#aaa" : "linear-gradient(135deg, #3D8B7A, #2d7466)",
+            color: "#fff", fontSize: 15, fontWeight: 700,
+            cursor: saving ? "wait" : "pointer",
             fontFamily: "'Fraunces', serif",
-            letterSpacing: "0.3px",
-            transition: "background 0.2s",
           }}
         >
-          Publicar ♻️
+          {saving ? "Publicando..." : "Publicar artículo ♻️"}
         </button>
       </div>
     </div>

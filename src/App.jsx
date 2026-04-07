@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { CATEGORIES, TIPOS, SAMPLE_ITEMS, formatColones } from './data';
 import ItemImage from './components/ItemImage';
 import Badge from './components/Badge';
@@ -6,15 +6,21 @@ import NewItemModal from './components/NewItemModal';
 import ItemDetail from './components/ItemDetail';
 import CatalogUpload from './components/CatalogUpload';
 import ProviderPreferences from './components/ProviderPreferences';
+import AuthModal from './components/AuthModal';
+import useAuth from './hooks/useAuth';
+import { subscribeItems, subscribeAlerts } from './services/firestore';
 
 export default function App() {
-  const [items, setItems] = useState(SAMPLE_ITEMS);
+  const { user, profile, loading: authLoading, register, login, logout } = useAuth();
+  const [items, setItems] = useState([]);
+  const [firebaseItems, setFirebaseItems] = useState(null); // null = loading
   const [filtroCategoria, setFiltroCategoria] = useState(null);
   const [filtroTipo, setFiltroTipo] = useState(null);
   const [busqueda, setBusqueda] = useState("");
   const [showNewItem, setShowNewItem] = useState(false);
   const [showCatalog, setShowCatalog] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [savedAlerts, setSavedAlerts] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loaded, setLoaded] = useState(false);
@@ -23,6 +29,37 @@ export default function App() {
     setTimeout(() => setLoaded(true), 100);
   }, []);
 
+  // Subscribe to Firestore items in real time
+  useEffect(() => {
+    const unsub = subscribeItems((firestoreItems) => {
+      setFirebaseItems(firestoreItems);
+    });
+    return unsub;
+  }, []);
+
+  // Use Firestore items if available, otherwise show sample items
+  useEffect(() => {
+    if (firebaseItems !== null) {
+      if (firebaseItems.length > 0) {
+        setItems(firebaseItems);
+      } else {
+        setItems(SAMPLE_ITEMS);
+      }
+    }
+  }, [firebaseItems]);
+
+  // Subscribe to alerts when user is logged in
+  useEffect(() => {
+    if (!user) {
+      setSavedAlerts([]);
+      return;
+    }
+    const unsub = subscribeAlerts(user.uid, (alerts) => {
+      setSavedAlerts(alerts);
+    });
+    return unsub;
+  }, [user]);
+
   const filtered = items.filter((item) => {
     if (filtroCategoria && item.categoria !== filtroCategoria) return false;
     if (filtroTipo && item.tipo !== filtroTipo) return false;
@@ -30,13 +67,27 @@ export default function App() {
     return true;
   });
 
-  const handleNewItem = (item) => {
-    setItems([item, ...items]);
+  const requireAuth = (action) => {
+    if (!user) {
+      setShowAuth(true);
+      return false;
+    }
+    return true;
   };
 
-  const handleCatalogItems = (newItems) => {
-    setItems([...newItems, ...items]);
+  const handlePublish = () => {
+    if (requireAuth()) setShowNewItem(true);
   };
+
+  const handleCatalog = () => {
+    if (requireAuth()) setShowCatalog(true);
+  };
+
+  const handleAlerts = () => {
+    if (requireAuth()) setShowAlerts(true);
+  };
+
+  const displayName = profile?.nombre || user?.displayName || "Usuario";
 
   return (
     <div style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
@@ -53,6 +104,8 @@ export default function App() {
         .fab { transition: transform 0.2s ease, box-shadow 0.2s ease; }
         .fab:hover { transform: scale(1.08); box-shadow: 0 8px 28px rgba(61,139,122,0.45) !important; }
         .fab:active { transform: scale(0.95); }
+        .auth-btn { transition: all 0.15s ease; }
+        .auth-btn:hover { opacity: 0.85; }
       `}</style>
 
       {/* Background texture */}
@@ -116,10 +169,52 @@ export default function App() {
               </p>
             </div>
           </div>
-          <div style={{ fontSize: 11, color: "#8a847d", textAlign: "right" }}>
-            <span style={{ fontWeight: 700, color: "#3D8B7A", fontSize: 16 }}>{items.length}</span>
-            <br />
-            artículos
+
+          {/* Auth section */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {user ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#2d2a26", lineHeight: 1.2 }}>
+                    {displayName}
+                  </div>
+                  <button
+                    className="auth-btn"
+                    onClick={logout}
+                    style={{
+                      background: "none", border: "none", fontSize: 11,
+                      color: "#E07A5F", cursor: "pointer", padding: 0,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+                <div style={{
+                  width: 32, height: 32, borderRadius: 10,
+                  background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "#fff", fontSize: 14, fontWeight: 800,
+                  fontFamily: "'Fraunces', serif",
+                }}>
+                  {displayName.charAt(0).toUpperCase()}
+                </div>
+              </div>
+            ) : (
+              <button
+                className="auth-btn"
+                onClick={() => setShowAuth(true)}
+                style={{
+                  padding: "7px 14px", borderRadius: 10, border: "none",
+                  background: "linear-gradient(135deg, #3D8B7A, #2d7466)",
+                  color: "#fff", fontSize: 12, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "'Fraunces', serif",
+                  boxShadow: "0 2px 8px rgba(61,139,122,0.25)",
+                }}
+              >
+                Entrar ♻️
+              </button>
+            )}
           </div>
         </div>
 
@@ -206,6 +301,18 @@ export default function App() {
 
       {/* Items List */}
       <main style={{ padding: "12px 12px 100px", position: "relative", zIndex: 1 }}>
+        {/* Show sample data banner */}
+        {firebaseItems !== null && firebaseItems.length === 0 && (
+          <div style={{
+            padding: "10px 14px", borderRadius: 12, marginBottom: 12,
+            background: "linear-gradient(135deg, #3D8B7A15, #6A994E15)",
+            border: "1px solid #3D8B7A30", fontSize: 13, color: "#3D7A3E",
+            lineHeight: 1.4, textAlign: "center",
+          }}>
+            📌 Estos son artículos de ejemplo. ¡Sé el primero en publicar algo real!
+          </div>
+        )}
+
         {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 20px", color: "#999" }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
@@ -278,7 +385,7 @@ export default function App() {
                         <span />
                       )}
                       <span style={{ fontSize: 10, color: "#b0aaa3" }}>
-                        {item.autor} · {item.fecha}
+                        {item.autorNombre || item.autor} · {item.fecha || "Reciente"}
                       </span>
                     </div>
                   </div>
@@ -293,7 +400,7 @@ export default function App() {
       <div style={{ position: "fixed", bottom: 24, right: 20, zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
         <button
           className="fab"
-          onClick={() => setShowAlerts(true)}
+          onClick={handleAlerts}
           style={{
             width: 42,
             height: 42,
@@ -324,7 +431,7 @@ export default function App() {
         </button>
         <button
           className="fab"
-          onClick={() => setShowCatalog(true)}
+          onClick={handleCatalog}
           style={{
             width: 46,
             height: 46,
@@ -345,7 +452,7 @@ export default function App() {
         </button>
         <button
           className="fab"
-          onClick={() => setShowNewItem(true)}
+          onClick={handlePublish}
           style={{
             width: 56,
             height: 56,
@@ -366,10 +473,21 @@ export default function App() {
       </div>
 
       {/* Modals */}
-      <NewItemModal open={showNewItem} onClose={() => setShowNewItem(false)} onSubmit={handleNewItem} />
+      <AuthModal
+        open={showAuth}
+        onClose={() => setShowAuth(false)}
+        onRegister={register}
+        onLogin={login}
+      />
+      <NewItemModal
+        open={showNewItem}
+        onClose={() => setShowNewItem(false)}
+        user={user}
+        profile={profile}
+      />
       <ItemDetail item={selectedItem} onClose={() => setSelectedItem(null)} />
-      <CatalogUpload open={showCatalog} onClose={() => setShowCatalog(false)} onItemsGenerated={handleCatalogItems} />
-      <ProviderPreferences open={showAlerts} onClose={() => setShowAlerts(false)} onSave={setSavedAlerts} savedAlerts={savedAlerts} />
+      <CatalogUpload open={showCatalog} onClose={() => setShowCatalog(false)} user={user} profile={profile} />
+      <ProviderPreferences open={showAlerts} onClose={() => setShowAlerts(false)} userId={user?.uid} savedAlerts={savedAlerts} />
     </div>
   );
 }

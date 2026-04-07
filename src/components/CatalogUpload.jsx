@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { CATEGORIES, TIPOS } from '../data';
+import { addItem } from '../services/firestore';
 
 const GEMMA_PROMPT = `Sos un asistente para un marketplace de economía circular en Ococa, Acosta, Costa Rica.
 Tu trabajo es extraer artículos de la información que te doy y devolver SOLO un JSON array válido.
@@ -120,7 +121,7 @@ const labelStyle = {
   textTransform: "uppercase",
 };
 
-export default function CatalogUpload({ open, onClose, onItemsGenerated }) {
+export default function CatalogUpload({ open, onClose, user, profile }) {
   const [step, setStep] = useState("upload"); // upload | processing | preview | settings
   const [files, setFiles] = useState([]);
   const [textInput, setTextInput] = useState("");
@@ -238,12 +239,32 @@ export default function CatalogUpload({ open, onClose, onItemsGenerated }) {
     });
   };
 
-  const confirmItems = () => {
+  const confirmItems = async () => {
     const confirmed = generatedItems
       .filter(it => selectedItems.has(it.id))
       .map(it => ({ ...it, _selected: undefined }));
-    onItemsGenerated(confirmed);
-    resetAndClose();
+
+    try {
+      for (const item of confirmed) {
+        await addItem({
+          titulo: item.titulo,
+          descripcion: item.descripcion,
+          categoria: item.categoria,
+          tipo: item.tipo,
+          precio: item.precio,
+          imagen: item.imagen,
+          autorId: user?.uid || "anon",
+          autorNombre: item.autor || profile?.nombre || user?.displayName || "Anónimo",
+          autorTelefono: profile?.telefono || "",
+          autorEmail: user?.email || "",
+          fecha: "Justo ahora",
+        });
+      }
+      resetAndClose();
+    } catch (err) {
+      console.error(err);
+      setError("Error al publicar. Intentá de nuevo.");
+    }
   };
 
   const resetAndClose = () => {

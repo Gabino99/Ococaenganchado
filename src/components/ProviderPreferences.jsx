@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CATEGORIES, TIPOS } from '../data';
+import { saveAlerts } from '../services/firestore';
 
 const inputStyle = {
   width: "100%",
@@ -33,9 +34,10 @@ const ALERT_EXAMPLES = [
   "Materiales de construcción baratos",
 ];
 
-export default function ProviderPreferences({ open, onClose, onSave, savedAlerts = [] }) {
+export default function ProviderPreferences({ open, onClose, userId, savedAlerts = [] }) {
   const [alerts, setAlerts] = useState(savedAlerts.length > 0 ? savedAlerts : [{ texto: "", categorias: [], tipos: [], activo: true }]);
   const [editingIndex, setEditingIndex] = useState(savedAlerts.length > 0 ? null : 0);
+  const [saving, setSaving] = useState(false);
 
   if (!open) return null;
 
@@ -79,10 +81,24 @@ export default function ProviderPreferences({ open, onClose, onSave, savedAlerts
     setAlerts(prev => prev.map((a, i) => i === index ? { ...a, activo: !a.activo } : a));
   };
 
-  const handleSave = () => {
-    const validAlerts = alerts.filter(a => a.texto.trim() || a.categorias.length > 0);
-    onSave(validAlerts);
-    onClose();
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const validAlerts = alerts.filter(a => a.texto.trim() || a.categorias.length > 0);
+      // Clean up alert objects before saving (remove Firestore IDs)
+      const cleanAlerts = validAlerts.map(a => ({
+        texto: a.texto || "",
+        categorias: a.categorias || [],
+        tipos: a.tipos || [],
+        activo: a.activo !== false,
+      }));
+      await saveAlerts(userId, cleanAlerts);
+      onClose();
+    } catch (err) {
+      console.error("Error saving alerts:", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -319,13 +335,16 @@ export default function ProviderPreferences({ open, onClose, onSave, savedAlerts
         {/* Save button */}
         <button
           onClick={handleSave}
+          disabled={saving}
           style={{
             width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
-            background: "#3D8B7A", color: "#fff", fontSize: 15, fontWeight: 700,
-            cursor: "pointer", fontFamily: "'Fraunces', serif",
+            background: saving ? "#aaa" : "#3D8B7A",
+            color: "#fff", fontSize: 15, fontWeight: 700,
+            cursor: saving ? "wait" : "pointer",
+            fontFamily: "'Fraunces', serif",
           }}
         >
-          Guardar alertas 🔔
+          {saving ? "Guardando..." : "Guardar alertas 🔔"}
         </button>
       </div>
     </div>
