@@ -7,6 +7,7 @@ import ItemDetail from './components/ItemDetail';
 import CatalogUpload from './components/CatalogUpload';
 import ProviderPreferences from './components/ProviderPreferences';
 import AuthModal from './components/AuthModal';
+import ProfileModal from './components/ProfileModal';
 import useAuth from './hooks/useAuth';
 import { subscribeItems, subscribeAlerts } from './services/firestore';
 
@@ -21,6 +22,7 @@ export default function App() {
   const [showCatalog, setShowCatalog] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [savedAlerts, setSavedAlerts] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loaded, setLoaded] = useState(false);
@@ -92,6 +94,14 @@ export default function App() {
 
   const displayName = profile?.nombre || user?.displayName || "Usuario";
 
+  const goHome = () => {
+    setFiltroCategoria(null);
+    setFiltroTipo(null);
+    setBusqueda("");
+  };
+
+  const userItemCount = user ? items.filter(it => it.autorId === user.uid).length : 0;
+
   return (
     <div style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
       {/* Animations */}
@@ -147,7 +157,15 @@ export default function App() {
             transition: "all 0.5s ease",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <button
+            onClick={goHome}
+            style={{
+              display: "flex", alignItems: "center", gap: 10,
+              background: "none", border: "none", cursor: "pointer", padding: 0,
+              textAlign: "left",
+            }}
+            title="Ir al inicio"
+          >
             <div
               style={{
                 width: 38,
@@ -159,6 +177,7 @@ export default function App() {
                 justifyContent: "center",
                 fontSize: 18,
                 boxShadow: "0 2px 8px rgba(61,139,122,0.3)",
+                flexShrink: 0,
               }}
             >
               ♻️
@@ -171,38 +190,40 @@ export default function App() {
                 ECONOMÍA CIRCULAR · ACOSTA
               </p>
             </div>
-          </div>
+          </button>
 
           {/* Auth section */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {user ? (
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <button
+                className="auth-btn"
+                onClick={() => setShowProfile(true)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  background: "none", border: "none", cursor: "pointer", padding: 0,
+                }}
+                title="Ver perfil"
+              >
                 <div style={{ textAlign: "right" }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#2d2a26", lineHeight: 1.2 }}>
                     {displayName}
                   </div>
-                  <button
-                    className="auth-btn"
-                    onClick={logout}
-                    style={{
-                      background: "none", border: "none", fontSize: 11,
-                      color: "#E07A5F", cursor: "pointer", padding: 0,
-                      fontWeight: 600,
-                    }}
-                  >
-                    Cerrar sesión
-                  </button>
+                  <div style={{ fontSize: 11, color: "#8a847d", fontWeight: 500 }}>
+                    {profile?.comunidad || "Ver perfil"}
+                  </div>
                 </div>
                 <div style={{
-                  width: 32, height: 32, borderRadius: 10,
+                  width: 34, height: 34, borderRadius: 10,
                   background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "#fff", fontSize: 14, fontWeight: 800,
+                  color: "#fff", fontSize: 15, fontWeight: 800,
                   fontFamily: "'Fraunces', serif",
+                  boxShadow: "0 2px 8px rgba(61,139,122,0.25)",
+                  flexShrink: 0,
                 }}>
                   {displayName.charAt(0).toUpperCase()}
                 </div>
-              </div>
+              </button>
             ) : (
               <button
                 className="auth-btn"
@@ -481,6 +502,14 @@ export default function App() {
         onClose={() => setShowAuth(false)}
         onRegister={register}
         onLogin={login}
+      />
+      <ProfileModal
+        open={showProfile}
+        onClose={() => setShowProfile(false)}
+        user={user}
+        profile={profile}
+        onLogout={logout}
+        itemCount={userItemCount}
       />
       <NewItemModal
         open={showNewItem}
