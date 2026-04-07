@@ -121,7 +121,7 @@ export default function ItemDetail({ item, onClose }) {
 
         {/* Badges */}
         <div style={{ display: "flex", gap: 6, marginBottom: 8, alignItems: "center" }}>
-          <Badge tipo={item.tipo} />
+          <Badge tipo={item.tipo} status={item.status} />
           {cat && <span style={{ fontSize: 12, color: "#8a847d" }}>{cat.icon} {cat.label}</span>}
         </div>
 
@@ -129,6 +129,7 @@ export default function ItemDetail({ item, onClose }) {
         <h2 style={{
           margin: "0 0 6px", fontFamily: "'Fraunces', serif",
           fontSize: 22, fontWeight: 800, color: "#2d2a26", lineHeight: 1.2,
+          textDecoration: item.status === "vendido" ? "line-through" : "none",
         }}>
           {item.titulo}
         </h2>
@@ -136,8 +137,9 @@ export default function ItemDetail({ item, onClose }) {
         {/* Price */}
         {item.precio && (
           <div style={{
-            fontSize: 22, fontWeight: 800, color: "#3D8B7A",
+            fontSize: 22, fontWeight: 800, color: item.status === "vendido" ? "#aaa" : "#3D8B7A",
             fontFamily: "'Fraunces', serif", marginBottom: 8,
+            textDecoration: item.status === "vendido" ? "line-through" : "none",
           }}>
             {formatColones(item.precio)}
           </div>
@@ -180,39 +182,50 @@ export default function ItemDetail({ item, onClose }) {
         </div>
 
         {/* Contact buttons */}
-        <div style={{ display: "flex", gap: 8 }}>
-          {/* WhatsApp button */}
-          <button
-            onClick={handleWhatsApp}
-            style={{
-              flex: 2, padding: "13px 0", borderRadius: 12, border: "none",
-              background: "linear-gradient(135deg, #25D366, #128C7E)",
-              color: "#fff", fontSize: 15, fontWeight: 700,
-              cursor: "pointer", fontFamily: "'Fraunces', serif",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              boxShadow: "0 3px 14px rgba(37,211,102,0.3)",
-              transition: "all 0.2s",
-            }}
-          >
-            💬 WhatsApp
-          </button>
-
-          {/* Email button */}
-          {item.autorEmail && (
+        {item.status === "vendido" ? (
+          <div style={{
+            padding: "14px", borderRadius: 14, background: "#f5f2ed",
+            textAlign: "center", color: "#8a847d", fontSize: 14, fontWeight: 600,
+            border: "1.5px dashed #d5d0c8",
+          }}>
+            🎉 Este artículo ya fue vendido. <br />
+            <span style={{ fontSize: 12, fontWeight: 400 }}>¡Seguí buscando más tesoros en Ococa!</span>
+          </div>
+        ) : (
+          <div style={{ display: "flex", gap: 8 }}>
+            {/* WhatsApp button */}
             <button
-              onClick={handleEmail}
+              onClick={handleWhatsApp}
               style={{
-                flex: 1, padding: "13px 0", borderRadius: 12,
-                border: "1.5px solid #d5d0c8", background: "transparent",
-                color: "#6b6560", fontSize: 14, fontWeight: 600,
-                cursor: "pointer",
+                flex: 2, padding: "13px 0", borderRadius: 12, border: "none",
+                background: "linear-gradient(135deg, #25D366, #128C7E)",
+                color: "#fff", fontSize: 15, fontWeight: 700,
+                cursor: "pointer", fontFamily: "'Fraunces', serif",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                boxShadow: "0 3px 14px rgba(37,211,102,0.3)",
                 transition: "all 0.2s",
               }}
             >
-              ✉️ Email
+              💬 WhatsApp
             </button>
-          )}
-        </div>
+
+            {/* Email button */}
+            {item.autorEmail && (
+              <button
+                onClick={handleEmail}
+                style={{
+                  flex: 1, padding: "13px 0", borderRadius: 12,
+                  border: "1.5px solid #d5d0c8", background: "transparent",
+                  color: "#6b6560", fontSize: 14, fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+              >
+                ✉️ Email
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import {
   onSnapshot,
   getDocs,
   setDoc,
+  updateDoc,
   where,
   serverTimestamp,
   limit,
@@ -37,6 +38,10 @@ export async function addItem(item) {
 
 export async function deleteItem(itemId) {
   await deleteDoc(doc(db, "items", itemId));
+}
+
+export async function updateItem(itemId, data) {
+  await updateDoc(doc(db, "items", itemId), data);
 }
 
 // ── Alerts ──

@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { updateUserProfile } from '../services/firestore';
+import { updateUserProfile, updateItem, deleteItem } from '../services/firestore';
+import { CATEGORIES, formatColones } from '../data';
+import Badge from './Badge';
+import ItemImage from './ItemImage';
 
 const inputStyle = {
   width: "100%",
@@ -24,7 +27,8 @@ const labelStyle = {
   textTransform: "uppercase",
 };
 
-export default function ProfileModal({ open, onClose, user, profile, onLogout, itemCount = 0 }) {
+export default function ProfileModal({ open, onClose, user, profile, onLogout, items = [] }) {
+  const itemCount = items.length;
   const [editing, setEditing] = useState(false);
   const [comunidad, setComunidad] = useState(profile?.comunidad || "");
   const [telefono, setTelefono] = useState(profile?.telefono || "");
@@ -144,6 +148,95 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
             </div>
           </div>
         </div>
+
+        {/* Mis Artículos List */}
+        {itemCount > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <h3 style={{
+              margin: "0 0 10px", fontSize: 13, fontWeight: 700,
+              color: "#8a847d", textTransform: "uppercase", letterSpacing: "0.5px",
+            }}>
+              Mis publicaciones
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 300, overflowY: "auto", paddingRight: 4 }}>
+              {items.map((it) => (
+                <div
+                  key={it.id}
+                  style={{
+                    display: "flex", gap: 10, padding: 10, borderRadius: 12,
+                    background: it.status === "vendido" ? "#f5f2ed" : "#fff",
+                    border: "1.5px solid #e0dbd4",
+                    opacity: it.status === "vendido" ? 0.7 : 1,
+                  }}
+                >
+                  <ItemImage index={it.imagen} size={50} fotos={it.fotos} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontSize: 13, fontWeight: 700, color: "#2d2a26",
+                      whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
+                    }}>
+                      {it.titulo}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                      <Badge tipo={it.tipo} status={it.status} />
+                      <span style={{ fontSize: 11, color: "#aaa" }}>
+                        {it.precio ? formatColones(it.precio) : ""}
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {it.status !== "vendido" ? (
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (confirm("¿Marcar como vendido?")) {
+                            await updateItem(it.id, { status: "vendido" });
+                          }
+                        }}
+                        style={{
+                          padding: "4px 8px", borderRadius: 6, border: "none",
+                          background: "#3D8B7A", color: "#fff", fontSize: 10,
+                          fontWeight: 700, cursor: "pointer",
+                        }}
+                      >
+                        Vendí ♻️
+                      </button>
+                    ) : (
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await updateItem(it.id, { status: "activo" });
+                        }}
+                        style={{
+                          padding: "4px 8px", borderRadius: 6, border: "1px solid #3D8B7A",
+                          background: "transparent", color: "#3D8B7A", fontSize: 10,
+                          fontWeight: 700, cursor: "pointer",
+                        }}
+                      >
+                        Activar
+                      </button>
+                    )}
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (confirm("¿Estás seguro de que querés eliminar esta publicación?")) {
+                          await deleteItem(it.id);
+                        }
+                      }}
+                      style={{
+                        padding: "4px 8px", borderRadius: 6, border: "none",
+                        background: "#FFF0ED", color: "#C44D3D", fontSize: 10,
+                        fontWeight: 700, cursor: "pointer",
+                      }}
+                    >
+                      Borrar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Profile details */}
         <div style={{

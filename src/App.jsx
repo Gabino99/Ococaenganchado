@@ -112,6 +112,17 @@ export default function App() {
     return true;
   }), [items, filtroCategoria, filtroTipo, busqueda]);
 
+  // Sort: active first, then by date
+  const sortedItems = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      const aSold = a.status === "vendido";
+      const bSold = b.status === "vendido";
+      if (aSold && !bSold) return 1;
+      if (!aSold && bSold) return -1;
+      return 0; // maintain date order from firestore
+    });
+  }, [filtered]);
+
   const requireAuth = () => {
     if (!user) {
       setShowAuth(true);
@@ -153,7 +164,12 @@ export default function App() {
     setBusqueda("");
   };
 
-  const userItemCount = user ? items.filter(it => it.autorId === user.uid).length : 0;
+  const userItems = useMemo(() => {
+    if (!user) return [];
+    return items.filter(it => it.autorId === user.uid);
+  }, [items, user]);
+
+  const userItemCount = userItems.length;
 
   return (
     <div style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
@@ -398,8 +414,9 @@ export default function App() {
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {filtered.map((item, i) => {
+            {sortedItems.map((item, i) => {
               const cat = CATEGORIES.find((c) => c.id === item.categoria);
+              const isSold = item.status === "vendido";
               return (
                 <div
                   key={item.id}
@@ -409,18 +426,19 @@ export default function App() {
                     display: "flex",
                     gap: 12,
                     padding: 12,
-                    background: "#fffdf9",
+                    background: isSold ? "#f5f2ed" : "#fffdf9",
                     borderRadius: 16,
                     boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
                     border: "1px solid rgba(0,0,0,0.04)",
                     animation: loaded ? `floatIn 0.4s ease ${i * 0.06}s both` : "none",
+                    opacity: isSold ? 0.8 : 1,
                   }}
                 >
                   <ItemImage index={item.imagen} size={88} fotos={item.fotos} />
                   <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                        <Badge tipo={item.tipo} />
+                        <Badge tipo={item.tipo} status={item.status} />
                         {cat && <span style={{ fontSize: 10, color: "#aaa" }}>{cat.icon} {cat.label}</span>}
                       </div>
                       <h3
@@ -434,6 +452,7 @@ export default function App() {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          textDecoration: isSold ? "line-through" : "none",
                         }}
                       >
                         {item.titulo}
@@ -588,7 +607,7 @@ export default function App() {
         user={user}
         profile={profile}
         onLogout={logout}
-        itemCount={userItemCount}
+        items={userItems}
       />
       <ChatModal
         open={showChat}
