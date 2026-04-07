@@ -134,6 +134,42 @@ export async function sendChatMessage(chatId, autorId, texto) {
   });
 }
 
+// ── Reviews ──
+
+export function subscribeSellerReviews(sellerId, callback) {
+  const q = query(
+    collection(db, "reviews"),
+    where("sellerId", "==", sellerId),
+    orderBy("creadoEn", "desc")
+  );
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  }, (err) => {
+    console.error("Error loading reviews:", err);
+    callback([]);
+  });
+}
+
+// One review per (buyerId, sellerId) pair — doc ID enforces uniqueness
+export async function submitReview(sellerId, buyerId, buyerName, rating, comment, item) {
+  const reviewId = `${buyerId}_${sellerId}`;
+  await setDoc(doc(db, "reviews", reviewId), {
+    sellerId,
+    buyerId,
+    buyerName,
+    rating,
+    comment: comment?.trim() || "",
+    itemId: item?.id || null,
+    itemTitulo: item?.titulo || null,
+    creadoEn: serverTimestamp(),
+  });
+}
+
+export async function getSellerProfile(uid) {
+  const snap = await getDoc(doc(db, "users", uid));
+  return snap.exists() ? snap.data() : null;
+}
+
 // ── User profile ──
 
 export async function updateUserProfile(uid, data) {

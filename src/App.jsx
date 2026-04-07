@@ -10,6 +10,7 @@ import AuthModal from './components/AuthModal';
 import ProfileModal from './components/ProfileModal';
 import ChatModal from './components/ChatModal';
 import InboxModal from './components/InboxModal';
+import SellerModal from './components/SellerModal';
 import useAuth from './hooks/useAuth';
 import { subscribeItems, subscribeAlerts, subscribeUserChats, getOrCreateChat } from './services/firestore';
 import { isUnread, getReadTs } from './components/InboxModal';
@@ -27,6 +28,7 @@ export default function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showInbox, setShowInbox] = useState(false);
+  const [sellerData, setSellerData] = useState(null); // { sellerId, sellerName, contextItem }
   const [activeChatId, setActiveChatId] = useState(null);
   const [activeChatData, setActiveChatData] = useState(null);
   const [unreadChat, setUnreadChat] = useState(0);
@@ -176,6 +178,14 @@ export default function App() {
       otherId: item.autorId,
     });
     setActiveChatId(chatId);
+  };
+
+  const handleViewSeller = (item) => {
+    setSellerData({
+      sellerId: item.autorId,
+      sellerName: item.autorNombre || item.autor,
+      contextItem: item,
+    });
   };
 
   const goHome = () => {
@@ -655,9 +665,19 @@ export default function App() {
         onClose={() => setSelectedItem(null)}
         currentUserId={user?.uid}
         onStartChat={handleStartChat}
+        onViewSeller={handleViewSeller}
       />
       <CatalogUpload open={showCatalog} onClose={() => setShowCatalog(false)} user={user} profile={profile} />
       <ProviderPreferences open={showAlerts} onClose={() => setShowAlerts(false)} userId={user?.uid} savedAlerts={savedAlerts} />
+      <SellerModal
+        open={!!sellerData}
+        onClose={() => setSellerData(null)}
+        sellerId={sellerData?.sellerId}
+        sellerName={sellerData?.sellerName}
+        currentUser={user}
+        currentProfile={profile}
+        contextItem={sellerData?.contextItem}
+      />
     </div>
   );
 }

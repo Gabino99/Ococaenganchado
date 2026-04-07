@@ -1,15 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CATEGORIES, formatColones } from '../data';
 import ItemImage from './ItemImage';
 import Badge from './Badge';
+import StarRating, { calcRating } from './StarRating';
+import { subscribeSellerReviews } from '../services/firestore';
 
-export default function ItemDetail({ item, onClose, currentUserId, onStartChat }) {
+export default function ItemDetail({ item, onClose, currentUserId, onStartChat, onViewSeller }) {
   const [activePhoto, setActivePhoto] = useState(0);
+  const [sellerReviews, setSellerReviews] = useState([]);
+
+  useEffect(() => {
+    if (!item?.autorId) return;
+    const unsub = subscribeSellerReviews(item.autorId, setSellerReviews);
+    return unsub;
+  }, [item?.autorId]);
 
   if (!item) return null;
 
   const fotos = item.fotos && item.fotos.length > 0 ? item.fotos : null;
   const cat = CATEGORIES.find((c) => c.id === item.categoria);
+  const { avg: sellerAvg, count: sellerReviewCount } = calcRating(sellerReviews);
 
   const formatDate = (fecha) => {
     if (!fecha) return "Reciente";
@@ -158,7 +168,7 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat }
           padding: "12px 14px", borderRadius: 12, background: "#f5f2ed",
           marginBottom: 14,
         }}>
-          <div style={{ fontSize: 11, color: "#8a847d", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 6 }}>
+          <div style={{ fontSize: 11, color: "#8a847d", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 8 }}>
             Publicado por
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -167,17 +177,39 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat }
               background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "#fff", fontSize: 15, fontWeight: 800, fontFamily: "'Fraunces', serif",
+              flexShrink: 0,
             }}>
               {(item.autorNombre || item.autor || "?").charAt(0).toUpperCase()}
             </div>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#2d2a26" }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#2d2a26", lineHeight: 1.2 }}>
                 {item.autorNombre || item.autor}
               </div>
-              <div style={{ fontSize: 12, color: "#8a847d" }}>
+              {sellerReviewCount > 0 ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
+                  <StarRating value={sellerAvg} size={12} />
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#2d2a26" }}>{sellerAvg.toFixed(1)}</span>
+                  <span style={{ fontSize: 11, color: "#aaa" }}>· {sellerReviewCount} {sellerReviewCount === 1 ? "reseña" : "reseñas"}</span>
+                </div>
+              ) : (
+                <div style={{ fontSize: 11, color: "#bbb", marginTop: 2 }}>Sin reseñas aún</div>
+              )}
+              <div style={{ fontSize: 11, color: "#aaa", marginTop: 1 }}>
                 {formatDate(item.creadoEn || item.fecha)}
               </div>
             </div>
+            {item.autorId && onViewSeller && (
+              <button
+                onClick={() => onViewSeller(item)}
+                style={{
+                  padding: "5px 10px", borderRadius: 8, flexShrink: 0,
+                  border: "1px solid #3D8B7A40", background: "#f0faf7",
+                  fontSize: 11, fontWeight: 700, color: "#3D8B7A", cursor: "pointer",
+                }}
+              >
+                Ver perfil
+              </button>
+            )}
           </div>
         </div>
 
