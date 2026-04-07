@@ -10,6 +10,7 @@ import {
   setDoc,
   where,
   serverTimestamp,
+  limit,
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
@@ -64,6 +65,30 @@ export async function saveAlerts(userId, alerts) {
     })
   );
   await Promise.all(addPromises);
+}
+
+// ── Chat ──
+
+export function subscribeMessages(callback) {
+  const q = query(collection(db, "chat"), orderBy("creadoEn", "desc"), limit(120));
+  return onSnapshot(q, (snapshot) => {
+    const messages = snapshot.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .reverse();
+    callback(messages);
+  }, (error) => {
+    console.error("Error subscribing to chat:", error);
+    callback([]);
+  });
+}
+
+export async function sendMessage(autorId, autorNombre, texto) {
+  await addDoc(collection(db, "chat"), {
+    texto: texto.trim(),
+    autorId,
+    autorNombre,
+    creadoEn: serverTimestamp(),
+  });
 }
 
 // ── User profile ──

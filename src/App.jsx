@@ -8,8 +8,9 @@ import CatalogUpload from './components/CatalogUpload';
 import ProviderPreferences from './components/ProviderPreferences';
 import AuthModal from './components/AuthModal';
 import ProfileModal from './components/ProfileModal';
+import ChatModal from './components/ChatModal';
 import useAuth from './hooks/useAuth';
-import { subscribeItems, subscribeAlerts } from './services/firestore';
+import { subscribeItems, subscribeAlerts, subscribeMessages } from './services/firestore';
 
 export default function App() {
   const { user, profile, loading: authLoading, register, login, logout } = useAuth();
@@ -23,6 +24,8 @@ export default function App() {
   const [showAlerts, setShowAlerts] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [unreadChat, setUnreadChat] = useState(0);
   const [savedAlerts, setSavedAlerts] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loaded, setLoaded] = useState(false);
@@ -62,6 +65,43 @@ export default function App() {
     return unsub;
   }, [user]);
 
+  // Subscribe to chat messages for unread count + browser notifications
+  useEffect(() => {
+    let lastReadTs = parseInt(localStorage.getItem("chatLastRead") || "0", 10);
+    let initialized = false;
+
+    const unsub = subscribeMessages((msgs) => {
+      if (!initialized) {
+        // First load: don't count existing messages as unread
+        initialized = true;
+        return;
+      }
+      if (showChat) return; // chat is open, no unread
+
+      const newMsgs = msgs.filter((m) => {
+        if (!m.creadoEn) return false;
+        const ts = m.creadoEn.toMillis ? m.creadoEn.toMillis() : 0;
+        return ts > lastReadTs && m.autorId !== (user?.uid || "");
+      });
+
+      if (newMsgs.length > 0) {
+        setUnreadChat((prev) => prev + newMsgs.length);
+        lastReadTs = Date.now();
+
+        // Browser notification
+        if (document.visibilityState !== "visible" && Notification.permission === "granted") {
+          const last = newMsgs[newMsgs.length - 1];
+          new Notification(`${last.autorNombre} en Plaza Ococa`, {
+            body: last.texto.length > 80 ? last.texto.slice(0, 80) + "..." : last.texto,
+            icon: "/icons/icon-192.png",
+            tag: "chat",
+          });
+        }
+      }
+    });
+    return unsub;
+  }, [user, showChat]);
+
   const filtered = useMemo(() => items.filter((item) => {
     if (filtroCategoria && item.categoria !== filtroCategoria) return false;
     if (filtroTipo && item.tipo !== filtroTipo) return false;
@@ -93,6 +133,19 @@ export default function App() {
   };
 
   const displayName = profile?.nombre || user?.displayName || "Usuario";
+
+  const openChat = () => {
+    // Request notification permission on first chat open
+    if (Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+    setShowChat(true);
+  };
+
+  const markChatRead = () => {
+    localStorage.setItem("chatLastRead", String(Date.now()));
+    setUnreadChat(0);
+  };
 
   const goHome = () => {
     setFiltroCategoria(null);
@@ -422,6 +475,32 @@ export default function App() {
 
       {/* FAB Menu */}
       <div style={{ position: "fixed", bottom: 24, right: 20, zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+        {/* Chat FAB */}
+        <button
+          className="fab"
+          onClick={openChat}
+          style={{
+            width: 42, height: 42, borderRadius: 12, border: "none",
+            background: "linear-gradient(135deg, #457B9D, #2d5f80)",
+            color: "#fff", fontSize: 18, cursor: "pointer",
+            boxShadow: "0 3px 14px rgba(69,123,157,0.35)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            position: "relative",
+          }}
+          title="Plaza Ococa · Chat"
+        >
+          💬
+          {unreadChat > 0 && (
+            <span style={{
+              position: "absolute", top: -4, right: -4,
+              width: 18, height: 18, borderRadius: 9,
+              background: "#E07A5F", color: "#fff",
+              fontSize: 10, fontWeight: 700,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>{unreadChat > 9 ? "9+" : unreadChat}</span>
+          )}
+        </button>
+
         <button
           className="fab"
           onClick={handleAlerts}
@@ -510,6 +589,13 @@ export default function App() {
         profile={profile}
         onLogout={logout}
         itemCount={userItemCount}
+      />
+      <ChatModal
+        open={showChat}
+        onClose={() => setShowChat(false)}
+        user={user}
+        profile={profile}
+        onMarkRead={markChatRead}
       />
       <NewItemModal
         open={showNewItem}
