@@ -7,6 +7,7 @@ import {
   orderBy,
   onSnapshot,
   getDocs,
+  getDoc,
   setDoc,
   updateDoc,
   where,
@@ -55,13 +56,11 @@ export function subscribeAlerts(userId, callback) {
 }
 
 export async function saveAlerts(userId, alerts) {
-  // Delete existing alerts for this user
   const q = query(collection(db, "alerts"), where("userId", "==", userId));
   const existing = await getDocs(q);
   const deletePromises = existing.docs.map((d) => deleteDoc(d.ref));
   await Promise.all(deletePromises);
 
-  // Add new alerts
   const addPromises = alerts.map((alert) =>
     addDoc(collection(db, "alerts"), {
       ...alert,
@@ -72,27 +71,66 @@ export async function saveAlerts(userId, alerts) {
   await Promise.all(addPromises);
 }
 
-// ── Chat ──
+// ── Private Chats ──
 
-export function subscribeMessages(callback) {
-  const q = query(collection(db, "chat"), orderBy("creadoEn", "desc"), limit(120));
-  return onSnapshot(q, (snapshot) => {
-    const messages = snapshot.docs
-      .map((d) => ({ id: d.id, ...d.data() }))
-      .reverse();
-    callback(messages);
-  }, (error) => {
-    console.error("Error subscribing to chat:", error);
+export function buildChatId(uid1, uid2, itemId) {
+  return [uid1, uid2].sort().join('|') + '|' + itemId;
+}
+
+export async function getOrCreateChat(buyerId, buyerName, sellerId, sellerName, item) {
+  const chatId = buildChatId(buyerId, sellerId, item.id);
+  const chatRef = doc(db, "chats", chatId);
+  const snap = await getDoc(chatRef);
+  if (!snap.exists()) {
+    await setDoc(chatRef, {
+      participants: [buyerId, sellerId],
+      names: { [buyerId]: buyerName, [sellerId]: sellerName },
+      itemId: item.id,
+      itemTitulo: item.titulo,
+      itemFoto: item.fotos?.[0] || null,
+      lastMessage: null,
+      lastMessageAt: serverTimestamp(),
+      lastAutorId: null,
+    });
+  }
+  return chatId;
+}
+
+export function subscribeUserChats(userId, callback) {
+  const q = query(
+    collection(db, "chats"),
+    where("participants", "array-contains", userId),
+    orderBy("lastMessageAt", "desc")
+  );
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  }, (err) => {
+    console.error("Error subscribing to chats:", err);
     callback([]);
   });
 }
 
-export async function sendMessage(autorId, autorNombre, texto) {
-  await addDoc(collection(db, "chat"), {
-    texto: texto.trim(),
+export function subscribeChatMessages(chatId, callback) {
+  const q = query(
+    collection(db, "chats", chatId, "messages"),
+    orderBy("creadoEn", "asc"),
+    limit(200)
+  );
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  });
+}
+
+export async function sendChatMessage(chatId, autorId, texto) {
+  await addDoc(collection(db, "chats", chatId, "messages"), {
+    texto,
     autorId,
-    autorNombre,
     creadoEn: serverTimestamp(),
+  });
+  await updateDoc(doc(db, "chats", chatId), {
+    lastMessage: texto.length > 80 ? texto.slice(0, 80) + "..." : texto,
+    lastMessageAt: serverTimestamp(),
+    lastAutorId: autorId,
   });
 }
 

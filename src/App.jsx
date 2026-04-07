@@ -9,8 +9,10 @@ import ProviderPreferences from './components/ProviderPreferences';
 import AuthModal from './components/AuthModal';
 import ProfileModal from './components/ProfileModal';
 import ChatModal from './components/ChatModal';
+import InboxModal from './components/InboxModal';
 import useAuth from './hooks/useAuth';
-import { subscribeItems, subscribeAlerts, subscribeMessages } from './services/firestore';
+import { subscribeItems, subscribeAlerts, subscribeUserChats, getOrCreateChat } from './services/firestore';
+import { isUnread, getReadTs } from './components/InboxModal';
 
 export default function App() {
   const { user, profile, loading: authLoading, register, login, logout } = useAuth();
@@ -24,7 +26,9 @@ export default function App() {
   const [showAlerts, setShowAlerts] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  const [showChat, setShowChat] = useState(false);
+  const [showInbox, setShowInbox] = useState(false);
+  const [activeChatId, setActiveChatId] = useState(null);
+  const [activeChatData, setActiveChatData] = useState(null);
   const [unreadChat, setUnreadChat] = useState(0);
   const [savedAlerts, setSavedAlerts] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -65,42 +69,36 @@ export default function App() {
     return unsub;
   }, [user]);
 
-  // Subscribe to chat messages for unread count + browser notifications
+  // Subscribe to user's private chats for unread count + browser notifications
   useEffect(() => {
-    let lastReadTs = parseInt(localStorage.getItem("chatLastRead") || "0", 10);
+    if (!user) { setUnreadChat(0); return; }
     let initialized = false;
+    const unsub = subscribeUserChats(user.uid, (chats) => {
+      const count = chats.filter(c => isUnread(c, user.uid)).length;
+      setUnreadChat(count);
 
-    const unsub = subscribeMessages((msgs) => {
-      if (!initialized) {
-        // First load: don't count existing messages as unread
-        initialized = true;
-        return;
-      }
-      if (showChat) return; // chat is open, no unread
-
-      const newMsgs = msgs.filter((m) => {
-        if (!m.creadoEn) return false;
-        const ts = m.creadoEn.toMillis ? m.creadoEn.toMillis() : 0;
-        return ts > lastReadTs && m.autorId !== (user?.uid || "");
-      });
-
-      if (newMsgs.length > 0) {
-        setUnreadChat((prev) => prev + newMsgs.length);
-        lastReadTs = Date.now();
-
-        // Browser notification
-        if (document.visibilityState !== "visible" && Notification.permission === "granted") {
-          const last = newMsgs[newMsgs.length - 1];
-          new Notification(`${last.autorNombre} en Plaza Ococa`, {
-            body: last.texto.length > 80 ? last.texto.slice(0, 80) + "..." : last.texto,
-            icon: "/icons/icon-192.png",
-            tag: "chat",
+      // Browser notification on new message (after initial load)
+      if (initialized && Notification.permission === "granted" && document.visibilityState !== "visible") {
+        const newChats = chats.filter(c => {
+          if (!c.lastMessageAt || c.lastAutorId === user.uid) return false;
+          const ts = c.lastMessageAt?.toMillis ? c.lastMessageAt.toMillis() : 0;
+          return ts > getReadTs(c.id);
+        });
+        newChats.forEach(c => {
+          const senderName = c.names
+            ? Object.entries(c.names).find(([uid]) => uid !== user.uid)?.[1] || "Alguien"
+            : "Alguien";
+          new Notification(`${senderName} te escribió`, {
+            body: c.lastMessage || "",
+            icon: c.itemFoto || "/icons/icon-192.png",
+            tag: `chat_${c.id}`,
           });
-        }
+        });
       }
+      initialized = true;
     });
     return unsub;
-  }, [user, showChat]);
+  }, [user]);
 
   const filtered = useMemo(() => items.filter((item) => {
     if (filtroCategoria && item.categoria !== filtroCategoria) return false;
@@ -145,17 +143,39 @@ export default function App() {
 
   const displayName = profile?.nombre || user?.displayName || "Usuario";
 
-  const openChat = () => {
-    // Request notification permission on first chat open
-    if (Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-    setShowChat(true);
+  const openInbox = () => {
+    if (!user) { setShowAuth(true); return; }
+    if (Notification.permission === "default") Notification.requestPermission();
+    setShowInbox(true);
   };
 
-  const markChatRead = () => {
-    localStorage.setItem("chatLastRead", String(Date.now()));
-    setUnreadChat(0);
+  const handleOpenChat = (chat) => {
+    const otherUid = chat.participants?.find(uid => uid !== user?.uid);
+    const otherName = chat.names?.[otherUid] || "Usuario";
+    setActiveChatData({
+      itemTitulo: chat.itemTitulo,
+      itemFoto: chat.itemFoto || null,
+      otherName,
+      otherId: otherUid,
+    });
+    localStorage.setItem(`cr_${chat.id}`, String(Date.now()));
+    setActiveChatId(chat.id);
+    setShowInbox(false);
+  };
+
+  const handleStartChat = async (item) => {
+    if (!user) { setShowAuth(true); return; }
+    setSelectedItem(null);
+    const myName = profile?.nombre || user.displayName || "Anónimo";
+    const chatId = await getOrCreateChat(user.uid, myName, item.autorId, item.autorNombre, item);
+    localStorage.setItem(`cr_${chatId}`, String(Date.now()));
+    setActiveChatData({
+      itemTitulo: item.titulo,
+      itemFoto: item.fotos?.[0] || null,
+      otherName: item.autorNombre || "Vendedor",
+      otherId: item.autorId,
+    });
+    setActiveChatId(chatId);
   };
 
   const goHome = () => {
@@ -497,7 +517,7 @@ export default function App() {
         {/* Chat FAB */}
         <button
           className="fab"
-          onClick={openChat}
+          onClick={openInbox}
           style={{
             width: 42, height: 42, borderRadius: 12, border: "none",
             background: "linear-gradient(135deg, #457B9D, #2d5f80)",
@@ -609,12 +629,20 @@ export default function App() {
         onLogout={logout}
         items={userItems}
       />
+      <InboxModal
+        open={showInbox}
+        onClose={() => setShowInbox(false)}
+        user={user}
+        onOpenChat={handleOpenChat}
+        unreadCount={unreadChat}
+      />
       <ChatModal
-        open={showChat}
-        onClose={() => setShowChat(false)}
+        chatId={activeChatId}
+        chatData={activeChatData}
+        onClose={() => { setActiveChatId(null); setActiveChatData(null); }}
+        onBack={() => { setActiveChatId(null); setActiveChatData(null); setShowInbox(true); }}
         user={user}
         profile={profile}
-        onMarkRead={markChatRead}
       />
       <NewItemModal
         open={showNewItem}
@@ -622,7 +650,12 @@ export default function App() {
         user={user}
         profile={profile}
       />
-      <ItemDetail item={selectedItem} onClose={() => setSelectedItem(null)} />
+      <ItemDetail
+        item={selectedItem}
+        onClose={() => setSelectedItem(null)}
+        currentUserId={user?.uid}
+        onStartChat={handleStartChat}
+      />
       <CatalogUpload open={showCatalog} onClose={() => setShowCatalog(false)} user={user} profile={profile} />
       <ProviderPreferences open={showAlerts} onClose={() => setShowAlerts(false)} userId={user?.uid} savedAlerts={savedAlerts} />
     </div>

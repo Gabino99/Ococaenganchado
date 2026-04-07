@@ -3,7 +3,7 @@ import { CATEGORIES, formatColones } from '../data';
 import ItemImage from './ItemImage';
 import Badge from './Badge';
 
-export default function ItemDetail({ item, onClose }) {
+export default function ItemDetail({ item, onClose, currentUserId, onStartChat }) {
   const [activePhoto, setActivePhoto] = useState(0);
 
   if (!item) return null;
@@ -191,39 +191,63 @@ export default function ItemDetail({ item, onClose }) {
             🎉 Este artículo ya fue vendido. <br />
             <span style={{ fontSize: 12, fontWeight: 400 }}>¡Seguí buscando más tesoros en Ococa!</span>
           </div>
+        ) : currentUserId && item.autorId === currentUserId ? (
+          // It's the user's own item — no contact buttons
+          <div style={{
+            padding: "10px 14px", borderRadius: 12, background: "#f0faf7",
+            border: "1px solid #3D8B7A30", fontSize: 13, color: "#3D7A3E",
+            textAlign: "center", fontWeight: 600,
+          }}>
+            📝 Esta es tu publicación
+          </div>
         ) : (
-          <div style={{ display: "flex", gap: 8 }}>
-            {/* WhatsApp button */}
-            <button
-              onClick={handleWhatsApp}
-              style={{
-                flex: 2, padding: "13px 0", borderRadius: 12, border: "none",
-                background: "linear-gradient(135deg, #25D366, #128C7E)",
-                color: "#fff", fontSize: 15, fontWeight: 700,
-                cursor: "pointer", fontFamily: "'Fraunces', serif",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                boxShadow: "0 3px 14px rgba(37,211,102,0.3)",
-                transition: "all 0.2s",
-              }}
-            >
-              💬 WhatsApp
-            </button>
-
-            {/* Email button */}
-            {item.autorEmail && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* In-app chat button */}
+            {item.autorId && onStartChat && (
               <button
-                onClick={handleEmail}
+                onClick={() => onStartChat(item)}
                 style={{
-                  flex: 1, padding: "13px 0", borderRadius: 12,
-                  border: "1.5px solid #d5d0c8", background: "transparent",
-                  color: "#6b6560", fontSize: 14, fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all 0.2s",
+                  width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
+                  background: "linear-gradient(135deg, #457B9D, #2d5f80)",
+                  color: "#fff", fontSize: 15, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "'Fraunces', serif",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  boxShadow: "0 3px 14px rgba(69,123,157,0.3)",
                 }}
               >
-                ✉️ Email
+                💬 Chatear con el vendedor
               </button>
             )}
+
+            <div style={{ display: "flex", gap: 8 }}>
+              {/* WhatsApp button */}
+              <button
+                onClick={handleWhatsApp}
+                style={{
+                  flex: 2, padding: "11px 0", borderRadius: 12, border: "none",
+                  background: "linear-gradient(135deg, #25D366, #128C7E)",
+                  color: "#fff", fontSize: 14, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "'Fraunces', serif",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  boxShadow: "0 3px 10px rgba(37,211,102,0.25)",
+                }}
+              >
+                WhatsApp
+              </button>
+              {item.autorEmail && (
+                <button
+                  onClick={handleEmail}
+                  style={{
+                    flex: 1, padding: "11px 0", borderRadius: 12,
+                    border: "1.5px solid #d5d0c8", background: "transparent",
+                    color: "#6b6560", fontSize: 14, fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  ✉️
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
