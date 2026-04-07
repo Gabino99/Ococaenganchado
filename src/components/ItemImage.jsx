@@ -94,7 +94,18 @@ const patterns = [
   ),
 ];
 
-export default function ItemImage({ index, size = 120 }) {
+export default function ItemImage({ index, size = 120, fotos }) {
+  if (fotos && fotos.length > 0) {
+    return (
+      <div style={{ borderRadius: 12, overflow: "hidden", width: size, height: size, flexShrink: 0, background: "#f0ede8" }}>
+        <img
+          src={fotos[0]}
+          alt=""
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </div>
+    );
+  }
   const colors = ITEM_COLORS[index % ITEM_COLORS.length];
   return (
     <div style={{ borderRadius: 12, overflow: "hidden", width: size, height: size, flexShrink: 0 }}>

@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { CATEGORIES, formatColones } from '../data';
 import ItemImage from './ItemImage';
 import Badge from './Badge';
 
 export default function ItemDetail({ item, onClose }) {
+  const [activePhoto, setActivePhoto] = useState(0);
+
   if (!item) return null;
 
+  const fotos = item.fotos && item.fotos.length > 0 ? item.fotos : null;
   const cat = CATEGORIES.find((c) => c.id === item.categoria);
 
   const formatDate = (fecha) => {
@@ -73,10 +77,47 @@ export default function ItemDetail({ item, onClose }) {
             style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999", padding: 4 }}>✕</button>
         </div>
 
-        {/* Image */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-          <ItemImage index={item.imagen} size={160} />
-        </div>
+        {/* Photo gallery */}
+        {fotos ? (
+          <div style={{ marginBottom: 16 }}>
+            {/* Main photo */}
+            <div style={{
+              borderRadius: 14, overflow: "hidden",
+              width: "100%", aspectRatio: "4/3",
+              background: "#f0ede8", marginBottom: 8,
+            }}>
+              <img
+                src={fotos[activePhoto]}
+                alt=""
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </div>
+            {/* Thumbnails */}
+            {fotos.length > 1 && (
+              <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
+                {fotos.map((url, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActivePhoto(i)}
+                    style={{
+                      width: 52, height: 52, flexShrink: 0, borderRadius: 8, overflow: "hidden",
+                      border: activePhoto === i ? "2.5px solid #3D8B7A" : "2px solid transparent",
+                      padding: 0, cursor: "pointer", background: "none",
+                      opacity: activePhoto === i ? 1 : 0.65,
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+            <ItemImage index={item.imagen} size={160} />
+          </div>
+        )}
 
         {/* Badges */}
         <div style={{ display: "flex", gap: 6, marginBottom: 8, alignItems: "center" }}>

@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { CATEGORIES, TIPOS } from '../data';
 import { addItem } from '../services/firestore';
+import { uploadItemPhotos } from '../services/storage';
+
+const MAX_PHOTOS = 10;
 
 const inputStyle = {
   width: "100%",
@@ -31,10 +34,33 @@ export default function NewItemModal({ open, onClose, user, profile }) {
   const [categoria, setCategoria] = useState("");
   const [tipo, setTipo] = useState("venta");
   const [precio, setPrecio] = useState("");
+  const [photos, setPhotos] = useState([]); // { file, preview }
+  const [uploadProgress, setUploadProgress] = useState(null); // "Subiendo 2/5..."
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
 
   if (!open) return null;
+
+  const handlePhotoSelect = (e) => {
+    const selected = Array.from(e.target.files);
+    const remaining = MAX_PHOTOS - photos.length;
+    if (remaining <= 0) return;
+    const toAdd = selected.slice(0, remaining).map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setPhotos(prev => [...prev, ...toAdd]);
+    // Reset input so the same file can be re-selected if needed
+    e.target.value = "";
+  };
+
+  const removePhoto = (index) => {
+    setPhotos(prev => {
+      URL.revokeObjectURL(prev[index].preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
 
   const handleSubmit = async () => {
     if (!titulo.trim() || !categoria) {
@@ -46,6 +72,15 @@ export default function NewItemModal({ open, onClose, user, profile }) {
     setError(null);
 
     try {
+      let fotos = [];
+      if (photos.length > 0) {
+        const files = photos.map(p => p.file);
+        fotos = await uploadItemPhotos(user.uid, files, (current, total) => {
+          setUploadProgress(`Subiendo foto ${current} de ${total}...`);
+        });
+        setUploadProgress(null);
+      }
+
       const item = {
         titulo: titulo.trim(),
         descripcion: descripcion.trim(),
@@ -53,6 +88,7 @@ export default function NewItemModal({ open, onClose, user, profile }) {
         tipo,
         precio: tipo === "venta" && precio ? parseInt(precio, 10) : null,
         imagen: Math.floor(Math.random() * 8),
+        fotos,
         autorId: user.uid,
         autorNombre: profile?.nombre || user.displayName || "Anónimo",
         autorTelefono: profile?.telefono || "",
@@ -64,6 +100,7 @@ export default function NewItemModal({ open, onClose, user, profile }) {
       resetAndClose();
     } catch (err) {
       console.error(err);
+      setUploadProgress(null);
       setError("Error al publicar. Intentá de nuevo.");
     } finally {
       setSaving(false);
@@ -71,11 +108,14 @@ export default function NewItemModal({ open, onClose, user, profile }) {
   };
 
   const resetAndClose = () => {
+    photos.forEach(p => URL.revokeObjectURL(p.preview));
     setTitulo("");
     setDescripcion("");
     setCategoria("");
     setTipo("venta");
     setPrecio("");
+    setPhotos([]);
+    setUploadProgress(null);
     setError(null);
     onClose();
   };
@@ -116,6 +156,75 @@ export default function NewItemModal({ open, onClose, user, profile }) {
           marginBottom: 14, fontWeight: 600,
         }}>
           📝 Publicando como <strong>{profile?.nombre || user?.displayName || "Usuario"}</strong>
+        </div>
+
+        {/* Photos */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+            <label style={labelStyle}>Fotos</label>
+            <span style={{ fontSize: 11, color: photos.length >= MAX_PHOTOS ? "#E07A5F" : "#aaa", fontWeight: 600 }}>
+              {photos.length}/{MAX_PHOTOS}
+            </span>
+          </div>
+
+          {/* Photo grid */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {photos.map((p, i) => (
+              <div
+                key={i}
+                style={{ position: "relative", width: 72, height: 72, borderRadius: 10, overflow: "hidden", flexShrink: 0 }}
+              >
+                <img
+                  src={p.preview}
+                  alt=""
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+                <button
+                  onClick={() => removePhoto(i)}
+                  style={{
+                    position: "absolute", top: 3, right: 3,
+                    width: 20, height: 20, borderRadius: 10,
+                    background: "rgba(30,28,25,0.7)", border: "none",
+                    color: "#fff", fontSize: 11, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    lineHeight: 1,
+                  }}
+                >✕</button>
+              </div>
+            ))}
+
+            {/* Add photo button */}
+            {photos.length < MAX_PHOTOS && (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  width: 72, height: 72, borderRadius: 10, flexShrink: 0,
+                  border: "2px dashed #d5d0c8", background: "#faf8f5",
+                  display: "flex", flexDirection: "column",
+                  alignItems: "center", justifyContent: "center",
+                  cursor: "pointer", gap: 4,
+                }}
+              >
+                <span style={{ fontSize: 20 }}>📷</span>
+                <span style={{ fontSize: 10, color: "#8a847d", fontWeight: 600 }}>Agregar</span>
+              </button>
+            )}
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handlePhotoSelect}
+            style={{ display: "none" }}
+          />
+
+          {photos.length === 0 && (
+            <p style={{ fontSize: 11, color: "#bbb", margin: "6px 0 0" }}>
+              Opcional · máximo {MAX_PHOTOS} fotos
+            </p>
+          )}
         </div>
 
         {/* Title */}
@@ -228,7 +337,10 @@ export default function NewItemModal({ open, onClose, user, profile }) {
             fontFamily: "'Fraunces', serif",
           }}
         >
-          {saving ? "Publicando..." : "Publicar artículo ♻️"}
+          {saving
+            ? (uploadProgress || "Publicando...")
+            : "Publicar artículo ♻️"
+          }
         </button>
       </div>
     </div>

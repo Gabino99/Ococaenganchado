@@ -363,7 +363,7 @@ export default function App() {
                     animation: loaded ? `floatIn 0.4s ease ${i * 0.06}s both` : "none",
                   }}
                 >
-                  <ItemImage index={item.imagen} size={88} />
+                  <ItemImage index={item.imagen} size={88} fotos={item.fotos} />
                   <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
