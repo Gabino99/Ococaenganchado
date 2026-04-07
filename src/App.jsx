@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { CATEGORIES, TIPOS, SAMPLE_ITEMS, formatColones } from './data';
 import ItemImage from './components/ItemImage';
 import Badge from './components/Badge';
@@ -60,14 +60,17 @@ export default function App() {
     return unsub;
   }, [user]);
 
-  const filtered = items.filter((item) => {
+  const filtered = useMemo(() => items.filter((item) => {
     if (filtroCategoria && item.categoria !== filtroCategoria) return false;
     if (filtroTipo && item.tipo !== filtroTipo) return false;
-    if (busqueda && !item.titulo.toLowerCase().includes(busqueda.toLowerCase()) && !item.descripcion.toLowerCase().includes(busqueda.toLowerCase())) return false;
+    if (busqueda) {
+      const q = busqueda.toLowerCase();
+      if (!item.titulo.toLowerCase().includes(q) && !item.descripcion.toLowerCase().includes(q)) return false;
+    }
     return true;
-  });
+  }), [items, filtroCategoria, filtroTipo, busqueda]);
 
-  const requireAuth = (action) => {
+  const requireAuth = () => {
     if (!user) {
       setShowAuth(true);
       return false;

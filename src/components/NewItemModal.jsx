@@ -51,7 +51,7 @@ export default function NewItemModal({ open, onClose, user, profile }) {
         descripcion: descripcion.trim(),
         categoria,
         tipo,
-        precio: tipo === "venta" && precio ? parseInt(precio) : null,
+        precio: tipo === "venta" && precio ? parseInt(precio, 10) : null,
         imagen: Math.floor(Math.random() * 8),
         autorId: user.uid,
         autorNombre: profile?.nombre || user.displayName || "Anónimo",

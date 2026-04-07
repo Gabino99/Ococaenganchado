@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CATEGORIES, TIPOS } from '../data';
 import { saveAlerts } from '../services/firestore';
 
@@ -35,9 +35,22 @@ const ALERT_EXAMPLES = [
 ];
 
 export default function ProviderPreferences({ open, onClose, userId, savedAlerts = [] }) {
-  const [alerts, setAlerts] = useState(savedAlerts.length > 0 ? savedAlerts : [{ texto: "", categorias: [], tipos: [], activo: true }]);
-  const [editingIndex, setEditingIndex] = useState(savedAlerts.length > 0 ? null : 0);
+  const [alerts, setAlerts] = useState([{ texto: "", categorias: [], tipos: [], activo: true }]);
+  const [editingIndex, setEditingIndex] = useState(0);
   const [saving, setSaving] = useState(false);
+
+  // Sync state when modal opens with fresh data from Firestore
+  useEffect(() => {
+    if (open) {
+      if (savedAlerts.length > 0) {
+        setAlerts(savedAlerts);
+        setEditingIndex(null);
+      } else {
+        setAlerts([{ texto: "", categorias: [], tipos: [], activo: true }]);
+        setEditingIndex(0);
+      }
+    }
+  }, [open]);
 
   if (!open) return null;
 

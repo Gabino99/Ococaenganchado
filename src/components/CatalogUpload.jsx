@@ -88,16 +88,6 @@ function readFileAsBase64(file) {
   });
 }
 
-async function parseExcelFile(file) {
-  // For CSV/TSV files we can read as text
-  if (file.name.endsWith('.csv') || file.name.endsWith('.tsv')) {
-    return await readFileAsText(file);
-  }
-  // For xlsx, read as text representation
-  const text = await readFileAsText(file);
-  return text;
-}
-
 const inputStyle = {
   width: "100%",
   padding: "10px 14px",
@@ -200,12 +190,13 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
 
       if (allItems.length > 0) {
         // Add IDs and metadata
+        const autorNombre = profile?.nombre || user?.displayName || "";
         const itemsWithMeta = allItems.map((item, i) => ({
           ...item,
           id: Date.now() + i,
           fecha: "Justo ahora",
           imagen: Math.floor(Math.random() * 8),
-          autor: "",
+          autor: autorNombre,
           _selected: true,
         }));
         setGeneratedItems(itemsWithMeta);

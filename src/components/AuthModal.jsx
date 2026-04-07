@@ -91,6 +91,7 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
       <div
         onClick={e => e.stopPropagation()}
         style={{
+          position: "relative",
           background: "#fffdf9", borderRadius: 20,
           padding: "28px 22px 22px",
           width: "min(420px, 92vw)", maxHeight: "90vh", overflowY: "auto",

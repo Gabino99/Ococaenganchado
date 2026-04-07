@@ -116,6 +116,6 @@ export const SAMPLE_ITEMS = [
 ];
 
 export function formatColones(n) {
-  if (!n) return null;
+  if (n == null) return null;
   return "₡" + n.toLocaleString("es-CR");
 }
