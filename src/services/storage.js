@@ -43,7 +43,6 @@ export function compressImage(file, maxDim = 1200, quality = 0.8) {
 export async function uploadItemPhotos(userId, files, onProgress) {
   const urls = [];
   for (let i = 0; i < files.length; i++) {
-    if (onProgress) onProgress(i + 1, files.length);
     let file = files[i];
     if (file.type.startsWith('image/')) {
       try {
@@ -52,10 +51,14 @@ export async function uploadItemPhotos(userId, files, onProgress) {
         console.warn('Compression failed for', file.name, err);
       }
     }
+    if (onProgress) onProgress(i + 1, files.length);
     const path = `items/${userId}/${Date.now()}_${i}.jpg`;
     const storageRef = ref(storage, path);
-    const snapshot = await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(snapshot.ref);
+    const uploadPromise = uploadBytes(storageRef, file).then(snapshot => getDownloadURL(snapshot.ref));
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Upload timed out for photo ${i + 1}`)), 60000)
+    );
+    const url = await Promise.race([uploadPromise, timeout]);
     urls.push(url);
   }
   return urls;
