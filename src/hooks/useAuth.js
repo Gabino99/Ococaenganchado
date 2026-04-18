@@ -5,6 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  sendEmailVerification,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
@@ -47,6 +48,12 @@ export default function useAuth() {
     };
     await setDoc(doc(db, "users", cred.user.uid), profileData);
     setProfile(profileData);
+    // Enviar correo de verificación/bienvenida
+    try {
+      await sendEmailVerification(cred.user);
+    } catch (err) {
+      console.warn("No se pudo enviar el correo de verificación:", err);
+    }
     return cred.user;
   };
 
