@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { CATEGORIES, TIPOS } from '../data';
 import { addItem, checkAlertsForNewItem } from '../services/firestore';
 
-const GEMMA_PROMPT = `Sos un asistente para un marketplace de economía circular en Ococa, Acosta, Costa Rica.
+const GEMMA_PROMPT = `Sos un asistente para un marketplace de economía circular en Ococa, Costa Rica.
 Tu trabajo es extraer artículos de la información que te doy y devolver SOLO un JSON array válido.
 
 Categorías válidas: materiales, electronica, ropa, muebles, organico, varios

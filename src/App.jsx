@@ -303,7 +303,7 @@ export default function App() {
                 Ococa Enganchado
               </h1>
               <p style={{ margin: 0, fontSize: 10, color: "#8a847d", letterSpacing: "0.5px", fontWeight: 600 }}>
-                ECONOMÍA CIRCULAR · ACOSTA
+                ECONOMÍA CIRCULAR · OCOCA
               </p>
             </div>
           </div>
@@ -328,7 +328,7 @@ export default function App() {
             margin: "0 0 14px", fontFamily: "'Fraunces', serif",
             fontSize: 30, fontWeight: 900, color: "#2d2a26", lineHeight: 1.2,
           }}>
-            El mercado circular<br />de Acosta
+            El mercado circular<br />de Ococa
           </h2>
           <p style={{
             margin: "0 auto 32px", fontSize: 15, color: "#6b6560",
@@ -488,7 +488,7 @@ export default function App() {
                 Ococa Enganchado
               </h1>
               <p style={{ margin: 0, fontSize: 11, color: "#8a847d", letterSpacing: "0.5px", fontWeight: 600 }}>
-                ECONOMÍA CIRCULAR · ACOSTA
+                ECONOMÍA CIRCULAR · OCOCA
               </p>
             </div>
           </button>
