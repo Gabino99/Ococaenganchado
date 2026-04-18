@@ -16,7 +16,7 @@ import { subscribeItems, subscribeAlerts, subscribeUserChats, getOrCreateChat } 
 import { isUnread, getReadTs } from './components/InboxModal';
 
 export default function App() {
-  const { user, profile, loading: authLoading, register, login, logout } = useAuth();
+  const { user, profile, loading: authLoading, register, login, logout , refreshProfileh} = useAuth();
   const [items, setItems] = useState([]);
   const [firebaseItems, setFirebaseItems] = useState(null); // null = loading
   const [filtroCategoria, setFiltroCategoria] = useState(null);
@@ -638,6 +638,7 @@ export default function App() {
         profile={profile}
         onLogout={logout}
         items={userItems}
+        onProfileUpdate={refreshProfile}
       />
       <InboxModal
         open={showInbox}
