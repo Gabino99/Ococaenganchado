@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { CATEGORIES, TIPOS } from '../data';
-import { addItem } from '../services/firestore';
+import { addItem, checkAlertsForNewItem } from '../services/firestore';
 
 const GEMMA_PROMPT = `Sos un asistente para un marketplace de economía circular en Ococa, Acosta, Costa Rica.
 Tu trabajo es extraer artículos de la información que te doy y devolver SOLO un JSON array válido.
@@ -237,19 +237,21 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
 
     try {
       for (const item of confirmed) {
-        await addItem({
+        const payload = {
           titulo: item.titulo,
           descripcion: item.descripcion,
           categoria: item.categoria,
           tipo: item.tipo,
           precio: item.precio,
           imagen: item.imagen,
-          autorId: user?.uid || "anon",
-          autorNombre: item.autor || profile?.nombre || user?.displayName || "Anónimo",
-          autorTelefono: profile?.telefono || "",
-          autorEmail: user?.email || "",
-          fecha: "Justo ahora",
-        });
+          autorId: user?.uid || 'anon',
+          autorNombre: item.autor || profile?.nombre || user?.displayName || 'Anónimo',
+          autorTelefono: profile?.telefono || '',
+          autorEmail: user?.email || '',
+          fecha: 'Justo ahora',
+        };
+        const newItemId = await addItem(payload);
+        checkAlertsForNewItem(newItemId, payload).catch(console.error);
       }
       resetAndClose();
     } catch (err) {

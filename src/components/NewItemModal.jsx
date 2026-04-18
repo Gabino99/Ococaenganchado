@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { CATEGORIES, TIPOS } from '../data';
-import { addItem } from '../services/firestore';
+import { addItem, checkAlertsForNewItem } from '../services/firestore';
 import { uploadItemPhotos } from '../services/storage';
 
 const MAX_PHOTOS = 10;
@@ -96,7 +96,8 @@ export default function NewItemModal({ open, onClose, user, profile }) {
         fecha: "Justo ahora",
       };
 
-      await addItem(item);
+      const newItemId = await addItem(item);
+      checkAlertsForNewItem(newItemId, item).catch(console.error);
       resetAndClose();
     } catch (err) {
       console.error(err);

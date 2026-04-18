@@ -3,11 +3,14 @@ import { CATEGORIES, formatColones } from '../data';
 import ItemImage from './ItemImage';
 import Badge from './Badge';
 import StarRating, { calcRating } from './StarRating';
-import { subscribeSellerReviews } from '../services/firestore';
+import { subscribeSellerReviews, flagItem } from '../services/firestore';
 
 export default function ItemDetail({ item, onClose, currentUserId, onStartChat, onViewSeller }) {
   const [activePhoto, setActivePhoto] = useState(0);
   const [sellerReviews, setSellerReviews] = useState([]);
+  const [showFlagMenu, setShowFlagMenu] = useState(false);
+  const [flagging, setFlagging] = useState(false);
+  const [flagDone, setFlagDone] = useState(false);
 
   useEffect(() => {
     if (!item?.autorId) return;
@@ -16,6 +19,20 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
   }, [item?.autorId]);
 
   if (!item) return null;
+
+  const handleFlag = async (reason) => {
+    if (!currentUserId || flagging) return;
+    setFlagging(true);
+    try {
+      await flagItem(item.id, currentUserId, reason);
+      setFlagDone(true);
+      setShowFlagMenu(false);
+    } catch (err) {
+      console.error('Error flagging:', err);
+    } finally {
+      setFlagging(false);
+    }
+  };
 
   const fotos = item.fotos && item.fotos.length > 0 ? item.fotos : null;
   const cat = CATEGORIES.find((c) => c.id === item.categoria);
@@ -212,6 +229,62 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
             )}
           </div>
         </div>
+
+        {/* Reportar artículo */}
+        {currentUserId && item.autorId !== currentUserId && item.status !== 'vendido' && (
+          <div style={{ marginBottom: 10 }}>
+            {flagDone ? (
+              <div style={{ fontSize: 12, color: '#8a847d', textAlign: 'center', padding: '6px 0' }}>
+                ✓ Reporte enviado
+              </div>
+            ) : showFlagMenu ? (
+              <div style={{
+                padding: '12px', borderRadius: 12, background: '#FFF0ED',
+                border: '1px solid #E07A5F30',
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#C44D3D', marginBottom: 8 }}>
+                  ¿Por qué querés reportar este artículo?
+                </div>
+                {['Inapropiado', 'Spam', 'Incorrecto', 'Otro'].map((reason) => (
+                  <button
+                    key={reason}
+                    onClick={() => handleFlag(reason)}
+                    disabled={flagging}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left',
+                      padding: '7px 10px', marginBottom: 4, borderRadius: 8,
+                      border: '1px solid #E07A5F30', background: '#fffdf9',
+                      fontSize: 13, color: '#C44D3D', cursor: 'pointer',
+                    }}
+                  >
+                    {reason}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setShowFlagMenu(false)}
+                  style={{
+                    marginTop: 4, padding: '5px 10px', borderRadius: 8,
+                    border: 'none', background: 'transparent',
+                    fontSize: 12, color: '#8a847d', cursor: 'pointer',
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowFlagMenu(true)}
+                style={{
+                  background: 'none', border: 'none', fontSize: 11,
+                  color: '#ccc', cursor: 'pointer', padding: '4px 0',
+                  textDecoration: 'underline', display: 'block', textAlign: 'center', width: '100%',
+                }}
+              >
+                Reportar artículo
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Contact buttons */}
         {item.status === "vendido" ? (

@@ -11,8 +11,10 @@ import ProfileModal from './components/ProfileModal';
 import ChatModal from './components/ChatModal';
 import InboxModal from './components/InboxModal';
 import SellerModal from './components/SellerModal';
+import NotificationsModal from './components/NotificationsModal';
+import AdminPanel from './components/AdminPanel';
 import useAuth from './hooks/useAuth';
-import { subscribeItems, subscribeAlerts, subscribeUserChats, getOrCreateChat } from './services/firestore';
+import { subscribeItems, loadMoreItems, subscribeAlerts, subscribeUserChats, subscribeNotifications, getOrCreateChat } from './services/firestore';
 import { isUnread, getReadTs } from './components/InboxModal';
 
 export default function App() {
@@ -33,6 +35,12 @@ export default function App() {
   const [activeChatData, setActiveChatData] = useState(null);
   const [unreadChat, setUnreadChat] = useState(0);
   const [savedAlerts, setSavedAlerts] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [lastItemDoc, setLastItemDoc] = useState(null);
+  const [hasMoreItems, setHasMoreItems] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -40,10 +48,12 @@ export default function App() {
     setTimeout(() => setLoaded(true), 100);
   }, []);
 
-  // Subscribe to Firestore items in real time
+  // Subscribe to Firestore items in real time (primera página)
   useEffect(() => {
-    const unsub = subscribeItems((firestoreItems) => {
+    const unsub = subscribeItems(({ items: firestoreItems, lastDoc }) => {
       setFirebaseItems(firestoreItems);
+      setLastItemDoc(lastDoc);
+      setHasMoreItems(firestoreItems.length === 20);
     });
     return unsub;
   }, []);
@@ -67,6 +77,32 @@ export default function App() {
     }
     const unsub = subscribeAlerts(user.uid, (alerts) => {
       setSavedAlerts(alerts);
+    });
+    return unsub;
+  }, [user]);
+
+  // Subscribe to in-app notifications
+  useEffect(() => {
+    if (!user) { setNotifications([]); return; }
+    let initialLoad = true;
+    const prevIds = new Set();
+    const unsub = subscribeNotifications(user.uid, (notifs) => {
+      if (!initialLoad) {
+        notifs
+          .filter((n) => !n.leido && !prevIds.has(n.id))
+          .forEach((n) => {
+            if (Notification.permission === 'granted') {
+              new Notification('Ococa: nuevo artículo para vos 🌿', {
+                body: n.itemTitulo,
+                icon: '/icons/icon-192.png',
+                tag: `notif_${n.id}`,
+              });
+            }
+          });
+      }
+      notifs.forEach((n) => prevIds.add(n.id));
+      setNotifications(notifs);
+      initialLoad = false;
     });
     return unsub;
   }, [user]);
@@ -122,6 +158,29 @@ export default function App() {
       return 0; // maintain date order from firestore
     });
   }, [filtered]);
+
+  const isAdmin = profile?.isAdmin === true;
+  const unreadNotifications = notifications.filter((n) => !n.leido).length;
+
+  const handleLoadMore = async () => {
+    if (!lastItemDoc || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const { items: more, lastDoc } = await loadMoreItems(lastItemDoc);
+      setFirebaseItems((prev) => [...(prev || []), ...more]);
+      setLastItemDoc(lastDoc);
+      setHasMoreItems(more.length === 20);
+    } catch (err) {
+      console.error('Error loading more items:', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const handleNotificationItemClick = (itemId) => {
+    const found = items.find((it) => it.id === itemId);
+    if (found) setSelectedItem(found);
+  };
 
   const requireAuth = () => {
     if (!user) {
@@ -443,7 +502,7 @@ export default function App() {
             <p style={{ fontSize: 13 }}>Probá con otra búsqueda o categoría</p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {sortedItems.map((item, i) => {
               const cat = CATEGORIES.find((c) => c.id === item.categoria);
               const isSold = item.status === "vendido";
@@ -520,10 +579,74 @@ export default function App() {
             })}
           </div>
         )}
+
+        {/* Botón Ver más */}
+        {hasMoreItems && firebaseItems && firebaseItems.length > 0 && (
+          <div style={{ textAlign: 'center', padding: '16px 0 0' }}>
+            <button
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              style={{
+                padding: '10px 28px', borderRadius: 12,
+                border: '1.5px solid #d5d0c8', background: '#fffdf9',
+                fontSize: 13, fontWeight: 700, color: '#3D8B7A',
+                cursor: loadingMore ? 'wait' : 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              {loadingMore ? 'Cargando...' : 'Ver más artículos'}
+            </button>
+          </div>
+        )}
       </main>
 
       {/* FAB Menu */}
-      <div style={{ position: "fixed", bottom: 24, right: 20, zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+      <div style={{ position: 'fixed', bottom: 24, right: 20, zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
+
+        {/* Admin FAB — solo para admins */}
+        {isAdmin && (
+          <button
+            className="fab"
+            onClick={() => setShowAdmin(true)}
+            style={{
+              width: 42, height: 42, borderRadius: 12, border: 'none',
+              background: 'linear-gradient(135deg, #2d2a26, #4a4540)',
+              color: '#fff', fontSize: 16, cursor: 'pointer',
+              boxShadow: '0 3px 14px rgba(45,42,38,0.4)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            title="Panel de administración"
+          >
+            🛠️
+          </button>
+        )}
+
+        {/* Notifications FAB */}
+        <button
+          className="fab"
+          onClick={() => { if (!user) { setShowAuth(true); return; } setShowNotifications(true); }}
+          style={{
+            width: 42, height: 42, borderRadius: 12, border: 'none',
+            background: 'linear-gradient(135deg, #F2CC8F, #C4823A)',
+            color: '#fff', fontSize: 18, cursor: 'pointer',
+            boxShadow: '0 3px 14px rgba(196,130,58,0.35)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'relative',
+          }}
+          title="Mis notificaciones"
+        >
+          📬
+          {unreadNotifications > 0 && (
+            <span style={{
+              position: 'absolute', top: -4, right: -4,
+              width: 18, height: 18, borderRadius: 9,
+              background: '#E07A5F', color: '#fff',
+              fontSize: 10, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>{unreadNotifications > 9 ? '9+' : unreadNotifications}</span>
+          )}
+        </button>
+
         {/* Chat FAB */}
         <button
           className="fab"
@@ -678,6 +801,16 @@ export default function App() {
         currentUser={user}
         currentProfile={profile}
         contextItem={sellerData?.contextItem}
+      />
+      <NotificationsModal
+        open={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        user={user}
+        onItemClick={handleNotificationItemClick}
+      />
+      <AdminPanel
+        open={showAdmin}
+        onClose={() => setShowAdmin(false)}
       />
     </div>
   );
