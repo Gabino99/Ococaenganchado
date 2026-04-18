@@ -27,7 +27,7 @@ const labelStyle = {
   textTransform: "uppercase",
 };
 
-export default function ProfileModal({ open, onClose, user, profile, onLogout, items = [] }) {
+export default function ProfileModal({ open, onClose, user, profile, onLogout, items = [] , onProfileUpdate}) {
   const itemCount = items.length;
   const [editing, setEditing] = useState(false);
   const [comunidad, setComunidad] = useState(profile?.comunidad || "");
@@ -52,6 +52,7 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
     setSaving(true);
     try {
       await updateUserProfile(user.uid, { comunidad: comunidad.trim(), telefono: telefono.trim() });
+      await onProfileUpdate();
       setEditing(false);
     } catch (err) {
       console.error(err);
