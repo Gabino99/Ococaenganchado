@@ -64,11 +64,12 @@ export default function useAuth() {
     setUser(null);
     setProfile(null);
   };
+
   const refreshProfile = async () => {
-        if (!auth.currentUser) return;
-        const snap = await getDoc(doc(db, "users", auth.currentUser.uid));
-        if (snap.exists()) setProfile(snap.data());
+    if (!auth.currentUser) return;
+    const snap = await getDoc(doc(db, "users", auth.currentUser.uid));
+    if (snap.exists()) setProfile(snap.data());
   };
-  
-  return { user, profile, loading, register, login, logout , refreshProfile};
+
+  return { user, profile, loading, register, login, logout, refreshProfile };
 }
