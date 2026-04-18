@@ -52,9 +52,13 @@ export default function useAuth() {
 
   const login = async (email, password) => {
     const cred = await signInWithEmailAndPassword(auth, email, password);
-    const snap = await getDoc(doc(db, "users", cred.user.uid));
-    if (snap.exists()) {
-      setProfile(snap.data());
+    try {
+      const snap = await getDoc(doc(db, "users", cred.user.uid));
+      if (snap.exists()) {
+        setProfile(snap.data());
+      }
+    } catch (err) {
+      console.error("Error loading profile after login:", err);
     }
     return cred.user;
   };
@@ -67,8 +71,12 @@ export default function useAuth() {
 
   const refreshProfile = async () => {
     if (!auth.currentUser) return;
-    const snap = await getDoc(doc(db, "users", auth.currentUser.uid));
-    if (snap.exists()) setProfile(snap.data());
+    try {
+      const snap = await getDoc(doc(db, "users", auth.currentUser.uid));
+      if (snap.exists()) setProfile(snap.data());
+    } catch (err) {
+      console.error("Error refreshing profile:", err);
+    }
   };
 
   return { user, profile, loading, register, login, logout, refreshProfile };
