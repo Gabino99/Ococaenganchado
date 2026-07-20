@@ -278,7 +278,8 @@ export default function App() {
   // ── Landing page for non-authenticated users ─────────────────────────────
   if (!user) {
     return (
-      <div style={{ minHeight: "100vh", background: "#f5f2ed", position: "relative", overflow: "hidden" }}>
+      <div style={{ minHeight: "100vh", background: "#e8e4dc", display: "flex", justifyContent: "center" }}>
+      <div style={{ width: "100%", maxWidth: 480, minHeight: "100vh", background: "#f5f2ed", position: "relative", overflow: "hidden", transform: "translateZ(0)", boxShadow: "0 0 60px rgba(0,0,0,0.08)" }}>
         <style>{`
           @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
           @keyframes slideUp { from { transform: translateY(30px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
@@ -412,11 +413,13 @@ export default function App() {
         />
         <AboutModal open={showAbout} onClose={() => setShowAbout(false)} />
       </div>
+      </div>
     );
   }
 
   return (
-    <div style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "#e8e4dc", display: "flex", justifyContent: "center" }}>
+    <div style={{ width: "100%", maxWidth: 480, minHeight: "100vh", position: "relative", overflow: "hidden", transform: "translateZ(0)", boxShadow: "0 0 60px rgba(0,0,0,0.08)" }}>
       {/* Animations */}
       <style>{`
         @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
@@ -967,6 +970,7 @@ export default function App() {
         onClose={() => setShowAdmin(false)}
       />
       <AboutModal open={showAbout} onClose={() => setShowAbout(false)} />
+    </div>
     </div>
   );
 }
