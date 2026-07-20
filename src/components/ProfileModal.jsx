@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { updateUserProfile, updateItem, deleteItem } from '../services/firestore';
+import { uploadProfilePhoto } from '../services/storage';
 import { CATEGORIES, formatColones } from '../data';
 import Badge from './Badge';
 import ItemImage from './ItemImage';
@@ -33,6 +34,9 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
   const [comunidad, setComunidad] = useState(profile?.comunidad || "");
   const [telefono, setTelefono] = useState(profile?.telefono || "");
   const [saving, setSaving] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState(null);
+  const fileInputRef = useRef(null);
 
   if (!open) return null;
 
@@ -65,6 +69,24 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
     setComunidad(profile?.comunidad || "");
     setTelefono(profile?.telefono || "");
     setEditing(false);
+  };
+
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setPhotoError(null);
+    setUploadingPhoto(true);
+    try {
+      const url = await uploadProfilePhoto(user.uid, file);
+      await updateUserProfile(user.uid, { fotoURL: url });
+      await onProfileUpdate();
+    } catch (err) {
+      console.error(err);
+      setPhotoError("No se pudo subir la foto. Intentá de nuevo.");
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
   return (
@@ -100,16 +122,59 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
 
         {/* Avatar + nombre */}
         <div style={{ textAlign: "center", marginBottom: 20 }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: 18, margin: "0 auto 12px",
-            background: "linear-gradient(135deg, #3B5FA1, #789963)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#fff", fontSize: 28, fontWeight: 800,
-            fontFamily: "'Fraunces', serif",
-            boxShadow: "0 4px 16px rgba(59,95,161,0.3)",
-          }}>
-            {initial}
+          <div style={{ position: "relative", width: 64, margin: "0 auto 12px" }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: 18,
+              background: profile?.fotoURL ? "#e0dbd4" : "linear-gradient(135deg, #3B5FA1, #789963)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "#fff", fontSize: 28, fontWeight: 800,
+              fontFamily: "'Fraunces', serif",
+              boxShadow: "0 4px 16px rgba(59,95,161,0.3)",
+              overflow: "hidden",
+            }}>
+              {profile?.fotoURL ? (
+                <img
+                  src={profile.fotoURL}
+                  alt={displayName}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ) : initial}
+              {uploadingPhoto && (
+                <div style={{
+                  position: "absolute", inset: 0,
+                  background: "rgba(0,0,0,0.45)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, color: "#fff", fontWeight: 700,
+                }}>
+                  ...
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              title="Cambiar foto de perfil"
+              style={{
+                position: "absolute", bottom: -4, right: -4,
+                width: 26, height: 26, borderRadius: "50%",
+                border: "2px solid #fffdf9", background: "#2C4778",
+                color: "#fff", fontSize: 12,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+              }}
+            >
+              📷
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handlePhotoChange}
+            />
           </div>
+          {photoError && (
+            <p style={{ margin: "0 0 8px", fontSize: 11, color: "#BB4036" }}>{photoError}</p>
+          )}
           <h2 style={{
             margin: "0 0 4px", fontFamily: "'Fraunces', serif",
             fontSize: 22, fontWeight: 800, color: "#2d2a26",

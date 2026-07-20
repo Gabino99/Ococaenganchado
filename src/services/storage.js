@@ -40,6 +40,23 @@ export function compressImage(file, maxDim = 1200, quality = 0.8) {
   });
 }
 
+export async function uploadProfilePhoto(userId, file) {
+  let toUpload = file;
+  if (file.type.startsWith('image/')) {
+    try {
+      toUpload = await compressImage(file, 400, 0.85);
+    } catch (err) {
+      console.warn('Compression failed for', file.name, err);
+    }
+  }
+  const storageRef = ref(storage, `profiles/${userId}/avatar.jpg`);
+  const uploadPromise = uploadBytes(storageRef, toUpload).then(snapshot => getDownloadURL(snapshot.ref));
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('La subida tardó demasiado')), 60000)
+  );
+  return Promise.race([uploadPromise, timeout]);
+}
+
 export async function uploadItemPhotos(userId, files, onProgress) {
   const urls = [];
   for (let i = 0; i < files.length; i++) {

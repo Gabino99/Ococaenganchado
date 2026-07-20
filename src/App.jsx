@@ -490,14 +490,17 @@ export default function App() {
                 </div>
                 <div style={{
                   width: 34, height: 34, borderRadius: 10,
-                  background: "linear-gradient(135deg, #3B5FA1, #789963)",
+                  background: profile?.fotoURL ? "#e0dbd4" : "linear-gradient(135deg, #3B5FA1, #789963)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "#fff", fontSize: 15, fontWeight: 800,
                   fontFamily: "'Fraunces', serif",
                   boxShadow: "0 2px 8px rgba(59,95,161,0.25)",
                   flexShrink: 0,
+                  overflow: "hidden",
                 }}>
-                  {displayName.charAt(0).toUpperCase()}
+                  {profile?.fotoURL ? (
+                    <img src={profile.fotoURL} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : displayName.charAt(0).toUpperCase()}
                 </div>
               </button>
             ) : (

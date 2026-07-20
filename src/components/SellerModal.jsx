@@ -118,13 +118,16 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
         <div style={{ textAlign: "center", marginBottom: 20 }}>
           <div style={{
             width: 60, height: 60, borderRadius: 16, margin: "0 auto 10px",
-            background: "linear-gradient(135deg, #3B5FA1, #789963)",
+            background: sellerProfile?.fotoURL ? "#e0dbd4" : "linear-gradient(135deg, #3B5FA1, #789963)",
             display: "flex", alignItems: "center", justifyContent: "center",
             color: "#fff", fontSize: 26, fontWeight: 800,
             fontFamily: "'Fraunces', serif",
             boxShadow: "0 4px 16px rgba(59,95,161,0.3)",
+            overflow: "hidden",
           }}>
-            {displayName.charAt(0).toUpperCase()}
+            {sellerProfile?.fotoURL ? (
+              <img src={sellerProfile.fotoURL} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : displayName.charAt(0).toUpperCase()}
           </div>
           <h2 style={{
             margin: "0 0 2px", fontFamily: "'Fraunces', serif",
