@@ -4,7 +4,6 @@ import ItemImage from './components/ItemImage';
 import Badge from './components/Badge';
 import NewItemModal from './components/NewItemModal';
 import ItemDetail from './components/ItemDetail';
-import CatalogUpload from './components/CatalogUpload';
 import ProviderPreferences from './components/ProviderPreferences';
 import AuthModal from './components/AuthModal';
 import ProfileModal from './components/ProfileModal';
@@ -26,7 +25,6 @@ export default function App() {
   const [filtroTipo, setFiltroTipo] = useState(null);
   const [busqueda, setBusqueda] = useState("");
   const [showNewItem, setShowNewItem] = useState(false);
-  const [showCatalog, setShowCatalog] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -193,10 +191,6 @@ export default function App() {
 
   const handlePublish = () => {
     if (requireAuth()) setShowNewItem(true);
-  };
-
-  const handleCatalog = () => {
-    if (requireAuth()) setShowCatalog(true);
   };
 
   const handleAlerts = () => {
@@ -830,27 +824,6 @@ export default function App() {
         </button>
         <button
           className="fab"
-          onClick={handleCatalog}
-          style={{
-            width: 46,
-            height: 46,
-            borderRadius: 14,
-            border: "none",
-            background: "linear-gradient(135deg, #2C4778, #223A61)",
-            color: "#fff",
-            fontSize: 18,
-            cursor: "pointer",
-            boxShadow: "0 3px 14px rgba(44,71,120,0.35)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          title="Subir catálogo con IA"
-        >
-          🤖
-        </button>
-        <button
-          className="fab"
           onClick={handlePublish}
           style={{
             width: 56,
@@ -915,7 +888,6 @@ export default function App() {
         onStartChat={handleStartChat}
         onViewSeller={handleViewSeller}
       />
-      <CatalogUpload open={showCatalog} onClose={() => setShowCatalog(false)} user={user} profile={profile} />
       <ProviderPreferences open={showAlerts} onClose={() => setShowAlerts(false)} userId={user?.uid} savedAlerts={savedAlerts} />
       <SellerModal
         open={!!sellerData}
