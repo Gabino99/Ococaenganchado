@@ -20,7 +20,7 @@ import { subscribeItems, loadMoreItems, subscribeAlerts, subscribeUserChats, sub
 import { isUnread, getReadTs } from './components/InboxModal';
 
 export default function App() {
-  const { user, profile, loading: authLoading, register, login, logout, refreshProfile } = useAuth();
+  const { user, profile, loading: authLoading, register, login, logout, refreshProfile, resetPassword } = useAuth();
   const [items, setItems] = useState([]);
   const [firebaseItems, setFirebaseItems] = useState(null); // null = loading
   const [filtroCategoria, setFiltroCategoria] = useState(null);
@@ -397,6 +397,7 @@ export default function App() {
           onClose={() => setShowAuth(false)}
           onRegister={register}
           onLogin={login}
+          onResetPassword={resetPassword}
         />
       </div>
     );
@@ -885,6 +886,7 @@ export default function App() {
         onClose={() => setShowAuth(false)}
         onRegister={register}
         onLogin={login}
+        onResetPassword={resetPassword}
       />
       <ProfileModal
         open={showProfile}

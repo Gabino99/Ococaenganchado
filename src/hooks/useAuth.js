@@ -6,6 +6,7 @@ import {
   signOut,
   updateProfile,
   sendEmailVerification,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
@@ -86,5 +87,9 @@ export default function useAuth() {
     }
   };
 
-  return { user, profile, loading, register, login, logout, refreshProfile };
+  const resetPassword = async (email) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
+  return { user, profile, loading, register, login, logout, refreshProfile, resetPassword };
 }

@@ -24,8 +24,8 @@ const labelStyle = {
   textTransform: "uppercase",
 };
 
-export default function AuthModal({ open, onClose, onRegister, onLogin }) {
-  const [mode, setMode] = useState("login"); // login | register
+export default function AuthModal({ open, onClose, onRegister, onLogin, onResetPassword }) {
+  const [mode, setMode] = useState("login"); // login | register | reset
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nombre, setNombre] = useState("");
@@ -33,6 +33,7 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
   const [telefono, setTelefono] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   if (!open) return null;
 
@@ -45,6 +46,11 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
       if (mode === "register") {
         if (!nombre.trim()) { setError("Escribí tu nombre"); setLoading(false); return; }
         await onRegister(email, password, nombre.trim(), comunidad.trim(), telefono.trim());
+      } else if (mode === "reset") {
+        await onResetPassword(email);
+        setResetSent(true);
+        setLoading(false);
+        return;
       } else {
         await onLogin(email, password);
       }
@@ -58,7 +64,7 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
       } else if (err.code === "auth/weak-password") {
         setError("La contraseña debe tener al menos 6 caracteres.");
       } else if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
-        setError("Correo o contraseña incorrectos.");
+        setError(mode === "reset" ? "No encontramos una cuenta con ese correo." : "Correo o contraseña incorrectos.");
       } else {
         setError(err.message || "Ocurrió un error. Intentá de nuevo.");
       }
@@ -75,7 +81,14 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
     setTelefono("");
     setError(null);
     setMode("login");
+    setResetSent(false);
     onClose();
+  };
+
+  const goToMode = (m) => {
+    setMode(m);
+    setError(null);
+    setResetSent(false);
   };
 
   return (
@@ -107,17 +120,19 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 24, boxShadow: "0 4px 16px rgba(59,95,161,0.3)",
           }}>
-            {mode === "login" ? "👋" : "🌱"}
+            {mode === "login" ? "👋" : mode === "reset" ? "🔑" : "🌱"}
           </div>
           <h2 style={{
             margin: "0 0 4px", fontFamily: "'Fraunces', serif",
             fontSize: 22, fontWeight: 800, color: "#2d2a26",
           }}>
-            {mode === "login" ? "¡Bienvenido de vuelta!" : "Únete a la comunidad"}
+            {mode === "login" ? "¡Bienvenido de vuelta!" : mode === "reset" ? "Recuperar contraseña" : "Únete a la comunidad"}
           </h2>
           <p style={{ margin: 0, fontSize: 13, color: "#8a847d", lineHeight: 1.4 }}>
             {mode === "login"
               ? "Iniciá sesión para publicar y contactar vendedores"
+              : mode === "reset"
+              ? "Escribí tu correo y te enviamos un enlace para restablecerla"
               : "Creá tu cuenta para ser parte de Ococa Enganchado"
             }
           </p>
@@ -131,6 +146,17 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
             marginBottom: 12, lineHeight: 1.4, textAlign: "center",
           }}>
             {error}
+          </div>
+        )}
+
+        {/* Reset success */}
+        {mode === "reset" && resetSent && (
+          <div style={{
+            padding: "10px 12px", borderRadius: 10, background: "#EEF3E9",
+            border: "1px solid #78996340", fontSize: 13, color: "#5C7A4E",
+            marginBottom: 12, lineHeight: 1.4, textAlign: "center",
+          }}>
+            Te enviamos un correo a <strong>{email}</strong> con un enlace para restablecer tu contraseña.
           </div>
         )}
 
@@ -176,16 +202,36 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
             required
           />
 
-          <label style={labelStyle}>Contraseña *</label>
-          <input
-            style={inputStyle}
-            placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Tu contraseña"}
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            type="password"
-            required
-            minLength={6}
-          />
+          {mode !== "reset" && (
+            <>
+              <label style={labelStyle}>Contraseña *</label>
+              <input
+                style={inputStyle}
+                placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Tu contraseña"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                type="password"
+                required
+                minLength={6}
+              />
+            </>
+          )}
+
+          {mode === "login" && (
+            <div style={{ textAlign: "right", marginBottom: 10, marginTop: -4 }}>
+              <button
+                type="button"
+                onClick={() => goToMode("reset")}
+                style={{
+                  background: "none", border: "none", color: "#3B5FA1",
+                  fontWeight: 600, cursor: "pointer", fontSize: 12.5,
+                  textDecoration: "underline", padding: 0,
+                }}
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
+          )}
 
           {/* Submit Button */}
           <button
@@ -203,18 +249,20 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
           >
             {loading
               ? "Cargando..."
-              : mode === "login" ? "Iniciar sesión" : "Crear mi cuenta ♻️"
+              : mode === "login" ? "Iniciar sesión"
+              : mode === "reset" ? (resetSent ? "Reenviar enlace" : "Enviar enlace de recuperación")
+              : "Crear mi cuenta ♻️"
             }
           </button>
         </form>
 
         {/* Switch mode */}
         <div style={{ textAlign: "center", marginTop: 16, fontSize: 13, color: "#8a847d" }}>
-          {mode === "login" ? (
+          {mode === "login" && (
             <span>
               ¿No tenés cuenta?{" "}
               <button
-                onClick={() => { setMode("register"); setError(null); }}
+                onClick={() => goToMode("register")}
                 style={{
                   background: "none", border: "none", color: "#3B5FA1",
                   fontWeight: 700, cursor: "pointer", fontSize: 13,
@@ -224,11 +272,12 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
                 Registrate acá
               </button>
             </span>
-          ) : (
+          )}
+          {mode === "register" && (
             <span>
               ¿Ya tenés cuenta?{" "}
               <button
-                onClick={() => { setMode("login"); setError(null); }}
+                onClick={() => goToMode("login")}
                 style={{
                   background: "none", border: "none", color: "#3B5FA1",
                   fontWeight: 700, cursor: "pointer", fontSize: 13,
@@ -236,6 +285,21 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
                 }}
               >
                 Iniciá sesión
+              </button>
+            </span>
+          )}
+          {mode === "reset" && (
+            <span>
+              ¿Ya te acordaste?{" "}
+              <button
+                onClick={() => goToMode("login")}
+                style={{
+                  background: "none", border: "none", color: "#3B5FA1",
+                  fontWeight: 700, cursor: "pointer", fontSize: 13,
+                  textDecoration: "underline",
+                }}
+              >
+                Volver a iniciar sesión
               </button>
             </span>
           )}
