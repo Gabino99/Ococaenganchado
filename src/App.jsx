@@ -13,6 +13,7 @@ import SellerModal from './components/SellerModal';
 import NotificationsModal from './components/NotificationsModal';
 import AdminPanel from './components/AdminPanel';
 import PeonesModal from './components/PeonesModal';
+import AboutModal from './components/AboutModal';
 import useAuth from './hooks/useAuth';
 import BrandIcon from './components/BrandIcon';
 import { subscribeItems, loadMoreItems, subscribeAlerts, subscribeUserChats, subscribeNotifications, getOrCreateChat } from './services/firestore';
@@ -39,6 +40,7 @@ export default function App() {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const [lastItemDoc, setLastItemDoc] = useState(null);
   const [hasMoreItems, setHasMoreItems] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -303,18 +305,31 @@ export default function App() {
               </p>
             </div>
           </div>
-          <button
-            onClick={() => setShowAuth(true)}
-            style={{
-              padding: "7px 16px", borderRadius: 10, border: "none",
-              background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
-              color: "#fff", fontSize: 13, fontWeight: 700,
-              cursor: "pointer", fontFamily: "'Fraunces', serif",
-              boxShadow: "0 2px 8px rgba(59,95,161,0.25)",
-            }}
-          >
-            Entrar ♻️
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              onClick={() => setShowAbout(true)}
+              title="Sobre Ococa Enganchado"
+              style={{
+                width: 34, height: 34, borderRadius: 10, border: "1.5px solid #ddd8d0",
+                background: "#fffdf9", color: "#6b6560", fontSize: 15,
+                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              ℹ️
+            </button>
+            <button
+              onClick={() => setShowAuth(true)}
+              style={{
+                padding: "7px 16px", borderRadius: 10, border: "none",
+                background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
+                color: "#fff", fontSize: 13, fontWeight: 700,
+                cursor: "pointer", fontFamily: "'Fraunces', serif",
+                boxShadow: "0 2px 8px rgba(59,95,161,0.25)",
+              }}
+            >
+              Entrar ♻️
+            </button>
+          </div>
         </header>
 
         {/* Hero */}
@@ -395,6 +410,7 @@ export default function App() {
           onRegister={register}
           onLogin={login}
         />
+        <AboutModal open={showAbout} onClose={() => setShowAbout(false)} />
       </div>
     );
   }
@@ -476,6 +492,17 @@ export default function App() {
 
           {/* Auth section */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              onClick={() => setShowAbout(true)}
+              title="Sobre Ococa Enganchado"
+              style={{
+                width: 30, height: 30, borderRadius: 9, border: "1.5px solid #ddd8d0",
+                background: "#fffdf9", color: "#6b6560", fontSize: 14, flexShrink: 0,
+                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              ℹ️
+            </button>
             {user ? (
               <button
                 className="auth-btn"
@@ -939,6 +966,7 @@ export default function App() {
         open={showAdmin}
         onClose={() => setShowAdmin(false)}
       />
+      <AboutModal open={showAbout} onClose={() => setShowAbout(false)} />
     </div>
   );
 }
