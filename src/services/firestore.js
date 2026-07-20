@@ -323,6 +323,35 @@ export async function getSellerProfile(uid) {
   return snap.exists() ? snap.data() : null;
 }
 
+// ── Peones (mano de obra) ──
+
+export function subscribePeones(callback) {
+  const q = query(collection(db, 'peones'), orderBy('creadoEn', 'desc'));
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  }, (err) => {
+    console.error('Error subscribing to peones:', err);
+    callback([]);
+  });
+}
+
+export async function addPeon(data) {
+  const docRef = await addDoc(collection(db, 'peones'), {
+    ...data,
+    estado: 'activo',
+    creadoEn: serverTimestamp(),
+  });
+  return docRef.id;
+}
+
+export async function updatePeon(peonId, data) {
+  await updateDoc(doc(db, 'peones', peonId), data);
+}
+
+export async function deletePeon(peonId) {
+  await deleteDoc(doc(db, 'peones', peonId));
+}
+
 // ── User profile ──
 
 export async function updateUserProfile(uid, data) {

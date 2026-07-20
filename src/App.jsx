@@ -12,6 +12,7 @@ import InboxModal from './components/InboxModal';
 import SellerModal from './components/SellerModal';
 import NotificationsModal from './components/NotificationsModal';
 import AdminPanel from './components/AdminPanel';
+import PeonesModal from './components/PeonesModal';
 import useAuth from './hooks/useAuth';
 import BrandIcon from './components/BrandIcon';
 import { subscribeItems, loadMoreItems, subscribeAlerts, subscribeUserChats, subscribeNotifications, getOrCreateChat } from './services/firestore';
@@ -26,6 +27,7 @@ export default function App() {
   const [busqueda, setBusqueda] = useState("");
   const [showNewItem, setShowNewItem] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
+  const [showPeones, setShowPeones] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showInbox, setShowInbox] = useState(false);
@@ -195,6 +197,10 @@ export default function App() {
 
   const handleAlerts = () => {
     if (requireAuth()) setShowAlerts(true);
+  };
+
+  const handlePeones = () => {
+    if (requireAuth()) setShowPeones(true);
   };
 
   const displayName = profile?.nombre || user?.displayName || "Usuario";
@@ -825,6 +831,29 @@ export default function App() {
             }}>{savedAlerts.filter(a => a.activo).length}</span>
           )}
         </button>
+
+        <button
+          className="fab"
+          onClick={handlePeones}
+          style={{
+            width: 42,
+            height: 42,
+            borderRadius: 12,
+            border: "none",
+            background: "linear-gradient(135deg, #2C4778, #223A61)",
+            color: "#fff",
+            fontSize: 18,
+            cursor: "pointer",
+            boxShadow: "0 3px 14px rgba(44,71,120,0.35)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          title="Mano de obra · Peones"
+        >
+          👷
+        </button>
+
         <button
           className="fab"
           onClick={handlePublish}
@@ -892,6 +921,7 @@ export default function App() {
         onViewSeller={handleViewSeller}
       />
       <ProviderPreferences open={showAlerts} onClose={() => setShowAlerts(false)} userId={user?.uid} savedAlerts={savedAlerts} />
+      <PeonesModal open={showPeones} onClose={() => setShowPeones(false)} user={user} profile={profile} />
       <SellerModal
         open={!!sellerData}
         onClose={() => setSellerData(null)}

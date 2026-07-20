@@ -13,6 +13,15 @@ export const TIPOS = [
   { id: "donacion", label: "Donación", color: "#789963" },
 ];
 
+export const OFICIOS = [
+  { id: "agricultura", label: "Agricultura / Finca", icon: "🌾" },
+  { id: "construccion", label: "Construcción", icon: "🧱" },
+  { id: "jardineria", label: "Jardinería", icon: "🌿" },
+  { id: "limpieza", label: "Limpieza", icon: "🧹" },
+  { id: "mudanzas", label: "Mudanzas / Carga", icon: "📦" },
+  { id: "otro", label: "Otro oficio", icon: "🛠️" },
+];
+
 export const ITEM_COLORS = [
   ["#BB4036", "#D8BCAD"],
   ["#3B5FA1", "#81B29A"],
