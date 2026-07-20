@@ -118,11 +118,11 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
         <div style={{ textAlign: "center", marginBottom: 20 }}>
           <div style={{
             width: 60, height: 60, borderRadius: 16, margin: "0 auto 10px",
-            background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
+            background: "linear-gradient(135deg, #3B5FA1, #789963)",
             display: "flex", alignItems: "center", justifyContent: "center",
             color: "#fff", fontSize: 26, fontWeight: 800,
             fontFamily: "'Fraunces', serif",
-            boxShadow: "0 4px 16px rgba(61,139,122,0.3)",
+            boxShadow: "0 4px 16px rgba(59,95,161,0.3)",
           }}>
             {displayName.charAt(0).toUpperCase()}
           </div>
@@ -179,9 +179,9 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
             }}
             style={{
               width: "100%", padding: "11px 0", borderRadius: 12, marginBottom: 16,
-              border: myReview ? "1.5px solid #3D8B7A40" : "none",
-              background: myReview ? "#f0faf7" : "linear-gradient(135deg, #3D8B7A, #2d7466)",
-              color: myReview ? "#3D8B7A" : "#fff",
+              border: myReview ? "1.5px solid #3B5FA140" : "none",
+              background: myReview ? "#EBEFF6" : "linear-gradient(135deg, #3B5FA1, #2C4778)",
+              color: myReview ? "#3B5FA1" : "#fff",
               fontSize: 14, fontWeight: 700, cursor: "pointer",
               fontFamily: "'Fraunces', serif",
             }}
@@ -194,7 +194,7 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
         {showForm && (
           <div style={{
             padding: "16px", borderRadius: 14, marginBottom: 16,
-            border: "1.5px solid #3D8B7A40", background: "#f0faf7",
+            border: "1.5px solid #3B5FA140", background: "#EBEFF6",
           }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: "#2d2a26", marginBottom: 12, textAlign: "center" }}>
               {myReview ? "Editá tu reseña" : `¿Cómo fue tu experiencia con ${displayName}?`}
@@ -204,7 +204,7 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 12, gap: 6 }}>
               <StarRating value={rating} onChange={setRating} size={34} />
               {rating > 0 && (
-                <span style={{ fontSize: 12, color: "#3D8B7A", fontWeight: 600 }}>
+                <span style={{ fontSize: 12, color: "#3B5FA1", fontWeight: 600 }}>
                   {RATING_LABELS[rating]}
                 </span>
               )}
@@ -227,8 +227,8 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
 
             {formError && (
               <div style={{
-                padding: "8px 10px", borderRadius: 8, background: "#FFF0ED",
-                border: "1px solid #E07A5F40", fontSize: 12, color: "#C44D3D",
+                padding: "8px 10px", borderRadius: 8, background: "#F8ECEB",
+                border: "1px solid #BB403640", fontSize: 12, color: "#BB4036",
                 marginTop: 8,
               }}>
                 {formError}
@@ -257,7 +257,7 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
                 disabled={saving || rating === 0}
                 style={{
                   flex: 2, padding: "10px 0", borderRadius: 10, border: "none",
-                  background: rating === 0 || saving ? "#ccc" : "linear-gradient(135deg, #3D8B7A, #2d7466)",
+                  background: rating === 0 || saving ? "#ccc" : "linear-gradient(135deg, #3B5FA1, #2C4778)",
                   color: "#fff", fontSize: 13, fontWeight: 700,
                   cursor: rating === 0 || saving ? "default" : "pointer",
                   fontFamily: "'Fraunces', serif",
@@ -298,15 +298,15 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
                   key={r.id}
                   style={{
                     padding: "12px 14px", borderRadius: 12,
-                    background: r.buyerId === currentUser?.uid ? "#f0faf7" : "#f5f2ed",
-                    border: r.buyerId === currentUser?.uid ? "1px solid #3D8B7A20" : "none",
+                    background: r.buyerId === currentUser?.uid ? "#EBEFF6" : "#f5f2ed",
+                    border: r.buyerId === currentUser?.uid ? "1px solid #3B5FA120" : "none",
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <div style={{
                         width: 28, height: 28, borderRadius: 8,
-                        background: "linear-gradient(135deg, #457B9D, #2d5f80)",
+                        background: "linear-gradient(135deg, #467098, #385A7A)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         color: "#fff", fontSize: 12, fontWeight: 800,
                         fontFamily: "'Fraunces', serif",
@@ -317,7 +317,7 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
                         <div style={{ fontSize: 13, fontWeight: 700, color: "#2d2a26", lineHeight: 1.2 }}>
                           {r.buyerName}
                           {r.buyerId === currentUser?.uid && (
-                            <span style={{ fontSize: 10, color: "#3D8B7A", marginLeft: 6, fontWeight: 600 }}>Tú</span>
+                            <span style={{ fontSize: 10, color: "#3B5FA1", marginLeft: 6, fontWeight: 600 }}>Tú</span>
                           )}
                         </div>
                         <StarRating value={r.rating} size={11} />

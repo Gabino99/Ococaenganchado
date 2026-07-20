@@ -140,7 +140,7 @@ export default function ChatModal({ chatId, chatData, onClose, onBack, user, pro
           ) : (
             <div style={{
               width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-              background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
+              background: "linear-gradient(135deg, #3B5FA1, #789963)",
               display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
             }}>🛍️</div>
           )}
@@ -203,7 +203,7 @@ export default function ChatModal({ chatId, chatData, onClose, onBack, user, pro
                     {!isMine && (
                       <div style={{
                         width: 26, height: 26, borderRadius: 7, flexShrink: 0,
-                        background: showName ? "linear-gradient(135deg, #3D8B7A, #6A994E)" : "transparent",
+                        background: showName ? "linear-gradient(135deg, #3B5FA1, #789963)" : "transparent",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         color: "#fff", fontSize: 11, fontWeight: 800,
                         fontFamily: "'Fraunces', serif", alignSelf: "flex-end", marginBottom: 2,
@@ -220,7 +220,7 @@ export default function ChatModal({ chatId, chatData, onClose, onBack, user, pro
                       <div style={{
                         padding: "8px 12px",
                         borderRadius: isMine ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
-                        background: isMine ? "linear-gradient(135deg, #3D8B7A, #2d7466)" : "#f0ede8",
+                        background: isMine ? "linear-gradient(135deg, #3B5FA1, #2C4778)" : "#f0ede8",
                         color: isMine ? "#fff" : "#2d2a26",
                         fontSize: 14, lineHeight: 1.45,
                         wordBreak: "break-word", whiteSpace: "pre-wrap",
@@ -244,7 +244,7 @@ export default function ChatModal({ chatId, chatData, onClose, onBack, user, pro
           <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
             <div style={{
               width: 26, height: 26, borderRadius: 7, flexShrink: 0,
-              background: "linear-gradient(135deg, #457B9D, #2d5f80)",
+              background: "linear-gradient(135deg, #467098, #385A7A)",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "#fff", fontSize: 11, fontWeight: 800,
               fontFamily: "'Fraunces', serif", marginBottom: 2,
@@ -270,7 +270,7 @@ export default function ChatModal({ chatId, chatData, onClose, onBack, user, pro
               disabled={!text.trim() || sending}
               style={{
                 width: 38, height: 38, borderRadius: 10, flexShrink: 0, border: "none",
-                background: text.trim() ? "linear-gradient(135deg, #3D8B7A, #2d7466)" : "#e0dbd4",
+                background: text.trim() ? "linear-gradient(135deg, #3B5FA1, #2C4778)" : "#e0dbd4",
                 color: "#fff", fontSize: 16,
                 cursor: text.trim() ? "pointer" : "default",
                 display: "flex", alignItems: "center", justifyContent: "center",

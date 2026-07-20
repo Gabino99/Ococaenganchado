@@ -95,10 +95,10 @@ export default function AdminPanel({ open, onClose }) {
           }}>
             <div style={{
               flex: 1, padding: '12px 14px', borderRadius: 12,
-              background: 'linear-gradient(135deg, #3D8B7A10, #6A994E10)',
-              border: '1px solid #3D8B7A20', textAlign: 'center',
+              background: 'linear-gradient(135deg, #3B5FA110, #78996310)',
+              border: '1px solid #3B5FA120', textAlign: 'center',
             }}>
-              <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Fraunces', serif", color: '#3D8B7A' }}>
+              <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Fraunces', serif", color: '#3B5FA1' }}>
                 {stats.totalItems}
               </div>
               <div style={{ fontSize: 11, color: '#8a847d', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -107,10 +107,10 @@ export default function AdminPanel({ open, onClose }) {
             </div>
             <div style={{
               flex: 1, padding: '12px 14px', borderRadius: 12,
-              background: 'linear-gradient(135deg, #457B9D10, #2d5f8010)',
-              border: '1px solid #457B9D20', textAlign: 'center',
+              background: 'linear-gradient(135deg, #46709810, #385A7A10)',
+              border: '1px solid #46709820', textAlign: 'center',
             }}>
-              <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Fraunces', serif", color: '#457B9D' }}>
+              <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Fraunces', serif", color: '#467098' }}>
                 {stats.totalUsers}
               </div>
               <div style={{ fontSize: 11, color: '#8a847d', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -119,10 +119,10 @@ export default function AdminPanel({ open, onClose }) {
             </div>
             <div style={{
               flex: 1, padding: '12px 14px', borderRadius: 12,
-              background: 'linear-gradient(135deg, #E07A5F10, #c4614a10)',
-              border: '1px solid #E07A5F20', textAlign: 'center',
+              background: 'linear-gradient(135deg, #BB403610, #8F2F2710)',
+              border: '1px solid #BB403620', textAlign: 'center',
             }}>
-              <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Fraunces', serif", color: '#E07A5F' }}>
+              <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "'Fraunces', serif", color: '#BB4036' }}>
                 {flaggedItems.length}
               </div>
               <div style={{ fontSize: 11, color: '#8a847d', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -148,8 +148,8 @@ export default function AdminPanel({ open, onClose }) {
         ) : flaggedItems.length === 0 ? (
           <div style={{
             padding: '16px 14px', borderRadius: 12,
-            background: '#f0faf7', border: '1px solid #3D8B7A20',
-            textAlign: 'center', color: '#3D7A3E', fontSize: 13, fontWeight: 600,
+            background: '#EBEFF6', border: '1px solid #3B5FA120',
+            textAlign: 'center', color: '#5C7A4E', fontSize: 13, fontWeight: 600,
           }}>
             ✓ Sin artículos reportados
           </div>
@@ -165,7 +165,7 @@ export default function AdminPanel({ open, onClose }) {
                   key={item.id}
                   style={{
                     padding: '14px', borderRadius: 14,
-                    background: '#FFF0ED', border: '1.5px solid #E07A5F30',
+                    background: '#F8ECEB', border: '1.5px solid #BB403630',
                   }}
                 >
                   {/* Item info */}
@@ -177,7 +177,7 @@ export default function AdminPanel({ open, onClose }) {
                         )}
                         <span style={{
                           fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 8,
-                          background: '#E07A5F', color: '#fff',
+                          background: '#BB4036', color: '#fff',
                         }}>
                           {item.flagCount} reporte{item.flagCount !== 1 ? 's' : ''}
                         </span>
@@ -223,7 +223,7 @@ export default function AdminPanel({ open, onClose }) {
                       disabled={isDeleting || isClearing}
                       style={{
                         flex: 1, padding: '8px 0', borderRadius: 10,
-                        border: 'none', background: isDeleting ? '#f0a090' : 'linear-gradient(135deg, #E07A5F, #c4614a)',
+                        border: 'none', background: isDeleting ? '#D68C86' : 'linear-gradient(135deg, #BB4036, #8F2F27)',
                         fontSize: 12, fontWeight: 700, cursor: isDeleting ? 'wait' : 'pointer',
                         color: '#fff', transition: 'all 0.15s',
                       }}

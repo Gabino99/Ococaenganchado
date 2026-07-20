@@ -152,8 +152,8 @@ export default function NewItemModal({ open, onClose, user, profile }) {
 
         {/* Publishing as */}
         <div style={{
-          padding: "8px 12px", borderRadius: 10, background: "#f0faf7",
-          border: "1px solid #3D8B7A30", fontSize: 12, color: "#3D7A3E",
+          padding: "8px 12px", borderRadius: 10, background: "#EBEFF6",
+          border: "1px solid #3B5FA130", fontSize: 12, color: "#5C7A4E",
           marginBottom: 14, fontWeight: 600,
         }}>
           📝 Publicando como <strong>{profile?.nombre || user?.displayName || "Usuario"}</strong>
@@ -163,7 +163,7 @@ export default function NewItemModal({ open, onClose, user, profile }) {
         <div style={{ marginBottom: 14 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
             <label style={labelStyle}>Fotos</label>
-            <span style={{ fontSize: 11, color: photos.length >= MAX_PHOTOS ? "#E07A5F" : "#aaa", fontWeight: 600 }}>
+            <span style={{ fontSize: 11, color: photos.length >= MAX_PHOTOS ? "#BB4036" : "#aaa", fontWeight: 600 }}>
               {photos.length}/{MAX_PHOTOS}
             </span>
           </div>
@@ -318,8 +318,8 @@ export default function NewItemModal({ open, onClose, user, profile }) {
         {/* Error */}
         {error && (
           <div style={{
-            padding: "10px 12px", borderRadius: 10, background: "#FFF0ED",
-            border: "1px solid #E07A5F40", fontSize: 13, color: "#C44D3D",
+            padding: "10px 12px", borderRadius: 10, background: "#F8ECEB",
+            border: "1px solid #BB403640", fontSize: 13, color: "#BB4036",
             marginBottom: 12,
           }}>
             {error}
@@ -332,7 +332,7 @@ export default function NewItemModal({ open, onClose, user, profile }) {
           disabled={saving}
           style={{
             width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
-            background: saving ? "#aaa" : "linear-gradient(135deg, #3D8B7A, #2d7466)",
+            background: saving ? "#aaa" : "linear-gradient(135deg, #3B5FA1, #2C4778)",
             color: "#fff", fontSize: 15, fontWeight: 700,
             cursor: saving ? "wait" : "pointer",
             fontFamily: "'Fraunces', serif",

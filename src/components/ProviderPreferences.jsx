@@ -157,7 +157,7 @@ export default function ProviderPreferences({ open, onClose, userId, savedAlerts
               key={index}
               style={{
                 borderRadius: 14,
-                border: editingIndex === index ? "2px solid #3D8B7A" : "1.5px solid #e0dbd4",
+                border: editingIndex === index ? "2px solid #3B5FA1" : "1.5px solid #e0dbd4",
                 background: alert.activo ? "#fffdf9" : "#f5f2ed",
                 overflow: "hidden",
                 opacity: alert.activo ? 1 : 0.6,
@@ -195,7 +195,7 @@ export default function ProviderPreferences({ open, onClose, userId, savedAlerts
                     onClick={(e) => { e.stopPropagation(); toggleActive(index); }}
                     style={{
                       width: 36, height: 20, borderRadius: 10, border: "none",
-                      background: alert.activo ? "#3D8B7A" : "#ccc",
+                      background: alert.activo ? "#3B5FA1" : "#ccc",
                       position: "relative", cursor: "pointer", transition: "background 0.2s",
                     }}
                   >
@@ -302,8 +302,8 @@ export default function ProviderPreferences({ open, onClose, userId, savedAlerts
                     onClick={() => removeAlert(index)}
                     style={{
                       marginTop: 12, padding: "6px 12px", borderRadius: 8,
-                      border: "1px solid #E07A5F40", background: "#FFF0ED",
-                      fontSize: 12, color: "#C44D3D", cursor: "pointer", fontWeight: 600,
+                      border: "1px solid #BB403640", background: "#F8ECEB",
+                      fontSize: 12, color: "#BB4036", cursor: "pointer", fontWeight: 600,
                     }}
                   >
                     🗑 Eliminar alerta
@@ -351,7 +351,7 @@ export default function ProviderPreferences({ open, onClose, userId, savedAlerts
           disabled={saving}
           style={{
             width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
-            background: saving ? "#aaa" : "#3D8B7A",
+            background: saving ? "#aaa" : "#3B5FA1",
             color: "#fff", fontSize: 15, fontWeight: 700,
             cursor: saving ? "wait" : "pointer",
             fontFamily: "'Fraunces', serif",

@@ -1,25 +1,25 @@
 export const CATEGORIES = [
-  { id: "materiales", label: "Materiales", icon: "🧱", color: "#E07A5F" },
-  { id: "electronica", label: "Electrónica", icon: "⚡", color: "#3D8B7A" },
-  { id: "ropa", label: "Ropa y Textiles", icon: "👕", color: "#7B68A8" },
-  { id: "muebles", label: "Muebles", icon: "🪑", color: "#C4823A" },
-  { id: "organico", label: "Orgánico / Compost", icon: "🌱", color: "#6A994E" },
-  { id: "varios", label: "Varios", icon: "📦", color: "#457B9D" },
+  { id: "materiales", label: "Materiales", icon: "🧱", color: "#BB4036" },
+  { id: "electronica", label: "Electrónica", icon: "⚡", color: "#3B5FA1" },
+  { id: "ropa", label: "Ropa y Textiles", icon: "👕", color: "#2C4778" },
+  { id: "muebles", label: "Muebles", icon: "🪑", color: "#A96B49" },
+  { id: "organico", label: "Orgánico / Compost", icon: "🌱", color: "#789963" },
+  { id: "varios", label: "Varios", icon: "📦", color: "#467098" },
 ];
 
 export const TIPOS = [
-  { id: "venta", label: "Venta", color: "#3D8B7A" },
-  { id: "trueque", label: "Trueque", color: "#E07A5F" },
-  { id: "donacion", label: "Donación", color: "#6A994E" },
+  { id: "venta", label: "Venta", color: "#3B5FA1" },
+  { id: "trueque", label: "Trueque", color: "#BB4036" },
+  { id: "donacion", label: "Donación", color: "#789963" },
 ];
 
 export const ITEM_COLORS = [
-  ["#E07A5F", "#F2CC8F"],
-  ["#3D8B7A", "#81B29A"],
-  ["#7B68A8", "#B8A9D4"],
-  ["#C4823A", "#E8C07A"],
-  ["#6A994E", "#A7C957"],
-  ["#457B9D", "#89B0C8"],
+  ["#BB4036", "#D8BCAD"],
+  ["#3B5FA1", "#81B29A"],
+  ["#2C4778", "#B8A9D4"],
+  ["#A96B49", "#E8C07A"],
+  ["#789963", "#A7C957"],
+  ["#467098", "#89B0C8"],
   ["#D4726A", "#F4A89A"],
   ["#5B8A72", "#9DC4A8"],
 ];

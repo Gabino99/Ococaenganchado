@@ -128,7 +128,7 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
                     onClick={() => setActivePhoto(i)}
                     style={{
                       width: 52, height: 52, flexShrink: 0, borderRadius: 8, overflow: "hidden",
-                      border: activePhoto === i ? "2.5px solid #3D8B7A" : "2px solid transparent",
+                      border: activePhoto === i ? "2.5px solid #3B5FA1" : "2px solid transparent",
                       padding: 0, cursor: "pointer", background: "none",
                       opacity: activePhoto === i ? 1 : 0.65,
                       transition: "all 0.15s",
@@ -164,7 +164,7 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
         {/* Price */}
         {item.precio && (
           <div style={{
-            fontSize: 22, fontWeight: 800, color: item.status === "vendido" ? "#aaa" : "#3D8B7A",
+            fontSize: 22, fontWeight: 800, color: item.status === "vendido" ? "#aaa" : "#3B5FA1",
             fontFamily: "'Fraunces', serif", marginBottom: 8,
             textDecoration: item.status === "vendido" ? "line-through" : "none",
           }}>
@@ -191,7 +191,7 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{
               width: 36, height: 36, borderRadius: 10,
-              background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
+              background: "linear-gradient(135deg, #3B5FA1, #789963)",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "#fff", fontSize: 15, fontWeight: 800, fontFamily: "'Fraunces', serif",
               flexShrink: 0,
@@ -220,8 +220,8 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
                 onClick={() => onViewSeller(item)}
                 style={{
                   padding: "5px 10px", borderRadius: 8, flexShrink: 0,
-                  border: "1px solid #3D8B7A40", background: "#f0faf7",
-                  fontSize: 11, fontWeight: 700, color: "#3D8B7A", cursor: "pointer",
+                  border: "1px solid #3B5FA140", background: "#EBEFF6",
+                  fontSize: 11, fontWeight: 700, color: "#3B5FA1", cursor: "pointer",
                 }}
               >
                 Ver perfil
@@ -239,10 +239,10 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
               </div>
             ) : showFlagMenu ? (
               <div style={{
-                padding: '12px', borderRadius: 12, background: '#FFF0ED',
-                border: '1px solid #E07A5F30',
+                padding: '12px', borderRadius: 12, background: '#F8ECEB',
+                border: '1px solid #BB403630',
               }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#C44D3D', marginBottom: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#BB4036', marginBottom: 8 }}>
                   ¿Por qué querés reportar este artículo?
                 </div>
                 {['Inapropiado', 'Spam', 'Incorrecto', 'Otro'].map((reason) => (
@@ -253,8 +253,8 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
                     style={{
                       display: 'block', width: '100%', textAlign: 'left',
                       padding: '7px 10px', marginBottom: 4, borderRadius: 8,
-                      border: '1px solid #E07A5F30', background: '#fffdf9',
-                      fontSize: 13, color: '#C44D3D', cursor: 'pointer',
+                      border: '1px solid #BB403630', background: '#fffdf9',
+                      fontSize: 13, color: '#BB4036', cursor: 'pointer',
                     }}
                   >
                     {reason}
@@ -299,8 +299,8 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
         ) : currentUserId && item.autorId === currentUserId ? (
           // It's the user's own item — no contact buttons
           <div style={{
-            padding: "10px 14px", borderRadius: 12, background: "#f0faf7",
-            border: "1px solid #3D8B7A30", fontSize: 13, color: "#3D7A3E",
+            padding: "10px 14px", borderRadius: 12, background: "#EBEFF6",
+            border: "1px solid #3B5FA130", fontSize: 13, color: "#5C7A4E",
             textAlign: "center", fontWeight: 600,
           }}>
             📝 Esta es tu publicación
@@ -313,11 +313,11 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
                 onClick={() => onStartChat(item)}
                 style={{
                   width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
-                  background: "linear-gradient(135deg, #457B9D, #2d5f80)",
+                  background: "linear-gradient(135deg, #467098, #385A7A)",
                   color: "#fff", fontSize: 15, fontWeight: 700,
                   cursor: "pointer", fontFamily: "'Fraunces', serif",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  boxShadow: "0 3px 14px rgba(69,123,157,0.3)",
+                  boxShadow: "0 3px 14px rgba(70,112,152,0.3)",
                 }}
               >
                 💬 Chatear con el vendedor

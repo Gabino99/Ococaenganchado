@@ -308,7 +308,7 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
               title="Configurar API Key"
               style={{
                 background: "none", border: "none", fontSize: 18, cursor: "pointer",
-                color: apiKey ? "#3D8B7A" : "#E07A5F", padding: 4,
+                color: apiKey ? "#3B5FA1" : "#BB4036", padding: 4,
               }}
             >⚙️</button>
             <button onClick={resetAndClose}
@@ -333,14 +333,14 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
             <p style={{ fontSize: 11, color: "#8a847d", margin: "8px 0 0", lineHeight: 1.4 }}>
               Gratis en{" "}
               <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener"
-                style={{ color: "#3D8B7A", fontWeight: 600 }}>
+                style={{ color: "#3B5FA1", fontWeight: 600 }}>
                 aistudio.google.com/apikey
               </a>
               {" "}→ Crear API Key → copiar y pegar acá.
               <br />Se usa Gemma 4 para procesar tus catálogos.
             </p>
             {apiKey && (
-              <div style={{ marginTop: 8, fontSize: 12, color: "#3D8B7A", fontWeight: 600 }}>
+              <div style={{ marginTop: 8, fontSize: 12, color: "#3B5FA1", fontWeight: 600 }}>
                 ✓ API Key guardada
               </div>
             )}
@@ -356,7 +356,7 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
               style={{
                 border: "2px dashed #d5d0c8", borderRadius: 16, padding: "28px 16px",
                 textAlign: "center", cursor: "pointer",
-                background: files.length > 0 ? "#f0faf7" : "#faf8f5",
+                background: files.length > 0 ? "#EBEFF6" : "#faf8f5",
                 transition: "all 0.2s",
                 marginBottom: 12,
               }}
@@ -392,7 +392,7 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
                       {f.type.startsWith("image/") ? "📷" : "📄"} {f.name}
                     </span>
                     <button onClick={() => removeFile(i)}
-                      style={{ background: "none", border: "none", color: "#E07A5F", cursor: "pointer", fontSize: 14, padding: "0 4px" }}>✕</button>
+                      style={{ background: "none", border: "none", color: "#BB4036", cursor: "pointer", fontSize: 14, padding: "0 4px" }}>✕</button>
                   </div>
                 ))}
               </div>
@@ -416,8 +416,8 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
             {/* Error */}
             {error && (
               <div style={{
-                padding: "10px 12px", borderRadius: 10, background: "#FFF0ED",
-                border: "1px solid #E07A5F40", fontSize: 13, color: "#C44D3D",
+                padding: "10px 12px", borderRadius: 10, background: "#F8ECEB",
+                border: "1px solid #BB403640", fontSize: 13, color: "#BB4036",
                 marginBottom: 12, lineHeight: 1.4,
               }}>
                 {error}
@@ -431,7 +431,7 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
               style={{
                 width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
                 background: processing || (files.length === 0 && !textInput.trim()) ? "#ccc"
-                  : "linear-gradient(135deg, #3D8B7A, #2d7466)",
+                  : "linear-gradient(135deg, #3B5FA1, #2C4778)",
                 color: "#fff", fontSize: 15, fontWeight: 700,
                 cursor: processing ? "wait" : (files.length === 0 && !textInput.trim()) ? "not-allowed" : "pointer",
                 fontFamily: "'Fraunces', serif",
@@ -462,8 +462,8 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
         {step === "preview" && (
           <>
             <div style={{
-              padding: "10px 12px", borderRadius: 10, background: "#E8F5E9",
-              border: "1px solid #6A994E40", fontSize: 13, color: "#3D7A3E",
+              padding: "10px 12px", borderRadius: 10, background: "#F2F5EF",
+              border: "1px solid #78996340", fontSize: 13, color: "#5C7A4E",
               marginBottom: 12, fontWeight: 600,
             }}>
               ✓ Gemma 4 encontró {generatedItems.length} artículo(s). Revisá y confirmá.
@@ -498,16 +498,16 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
                     onClick={() => toggleItem(item.id)}
                     style={{
                       display: "flex", gap: 10, padding: 10,
-                      background: selected ? "#f0faf7" : "#faf8f5",
+                      background: selected ? "#EBEFF6" : "#faf8f5",
                       borderRadius: 12, cursor: "pointer",
-                      border: selected ? "2px solid #3D8B7A" : "1.5px solid #e0dbd4",
+                      border: selected ? "2px solid #3B5FA1" : "1.5px solid #e0dbd4",
                       transition: "all 0.15s",
                       opacity: selected ? 1 : 0.6,
                     }}
                   >
                     <div style={{
                       width: 24, height: 24, borderRadius: 6, flexShrink: 0,
-                      background: selected ? "#3D8B7A" : "#e0dbd4",
+                      background: selected ? "#3B5FA1" : "#e0dbd4",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       color: "#fff", fontSize: 14, fontWeight: 700, marginTop: 2,
                     }}>
@@ -535,7 +535,7 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
                         {item.descripcion}
                       </div>
                       {item.precio && (
-                        <div style={{ fontSize: 14, fontWeight: 800, color: "#3D8B7A", fontFamily: "'Fraunces', serif", marginTop: 3 }}>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: "#3B5FA1", fontFamily: "'Fraunces', serif", marginTop: 3 }}>
                           ₡{item.precio.toLocaleString("es-CR")}
                         </div>
                       )}
@@ -575,7 +575,7 @@ export default function CatalogUpload({ open, onClose, user, profile }) {
                 disabled={selectedItems.size === 0 || !generatedItems[0]?.autor}
                 style={{
                   flex: 2, padding: "12px 0", borderRadius: 12, border: "none",
-                  background: selectedItems.size === 0 || !generatedItems[0]?.autor ? "#ccc" : "#3D8B7A",
+                  background: selectedItems.size === 0 || !generatedItems[0]?.autor ? "#ccc" : "#3B5FA1",
                   color: "#fff", fontSize: 14, fontWeight: 700, cursor: selectedItems.size === 0 ? "not-allowed" : "pointer",
                   fontFamily: "'Fraunces', serif",
                 }}

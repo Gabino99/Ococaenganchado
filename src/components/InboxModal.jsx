@@ -79,7 +79,7 @@ export default function InboxModal({ open, onClose, user, onOpenChat, unreadCoun
                 Mensajes
               </div>
               {unreadCount > 0 && (
-                <div style={{ fontSize: 11, color: "#3D8B7A", fontWeight: 600 }}>
+                <div style={{ fontSize: 11, color: "#3B5FA1", fontWeight: 600 }}>
                   {unreadCount} sin leer
                 </div>
               )}
@@ -122,7 +122,7 @@ export default function InboxModal({ open, onClose, user, onOpenChat, unreadCoun
                     display: "flex", gap: 12, padding: "12px 18px",
                     borderBottom: "1px solid #f5f2ed",
                     cursor: "pointer",
-                    background: unread ? "#f0faf7" : "transparent",
+                    background: unread ? "#EBEFF6" : "transparent",
                     transition: "background 0.15s",
                   }}
                 >
@@ -135,7 +135,7 @@ export default function InboxModal({ open, onClose, user, onOpenChat, unreadCoun
                     ) : (
                       <div style={{
                         width: 48, height: 48, borderRadius: 10,
-                        background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
+                        background: "linear-gradient(135deg, #3B5FA1, #789963)",
                         display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20,
                       }}>🛍️</div>
                     )}
@@ -143,7 +143,7 @@ export default function InboxModal({ open, onClose, user, onOpenChat, unreadCoun
                     <div style={{
                       position: "absolute", bottom: -4, right: -4,
                       width: 20, height: 20, borderRadius: 6,
-                      background: "linear-gradient(135deg, #457B9D, #2d5f80)",
+                      background: "linear-gradient(135deg, #467098, #385A7A)",
                       border: "2px solid #fffdf9",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       color: "#fff", fontSize: 9, fontWeight: 800,
@@ -161,7 +161,7 @@ export default function InboxModal({ open, onClose, user, onOpenChat, unreadCoun
                       }}>
                         {otherName}
                       </div>
-                      <div style={{ fontSize: 11, color: unread ? "#3D8B7A" : "#bbb", fontWeight: unread ? 700 : 400, flexShrink: 0 }}>
+                      <div style={{ fontSize: 11, color: unread ? "#3B5FA1" : "#bbb", fontWeight: unread ? 700 : 400, flexShrink: 0 }}>
                         {formatLastTime(chat.lastMessageAt)}
                       </div>
                     </div>
@@ -183,7 +183,7 @@ export default function InboxModal({ open, onClose, user, onOpenChat, unreadCoun
                       {unread && (
                         <div style={{
                           width: 8, height: 8, borderRadius: 4,
-                          background: "#3D8B7A", flexShrink: 0, marginLeft: 8,
+                          background: "#3B5FA1", flexShrink: 0, marginLeft: 8,
                         }} />
                       )}
                     </div>

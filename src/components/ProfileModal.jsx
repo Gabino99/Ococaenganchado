@@ -102,11 +102,11 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
         <div style={{ textAlign: "center", marginBottom: 20 }}>
           <div style={{
             width: 64, height: 64, borderRadius: 18, margin: "0 auto 12px",
-            background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
+            background: "linear-gradient(135deg, #3B5FA1, #789963)",
             display: "flex", alignItems: "center", justifyContent: "center",
             color: "#fff", fontSize: 28, fontWeight: 800,
             fontFamily: "'Fraunces', serif",
-            boxShadow: "0 4px 16px rgba(61,139,122,0.3)",
+            boxShadow: "0 4px 16px rgba(59,95,161,0.3)",
           }}>
             {initial}
           </div>
@@ -127,10 +127,10 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
         }}>
           <div style={{
             flex: 1, padding: "12px 10px", borderRadius: 12,
-            background: "linear-gradient(135deg, #3D8B7A15, #6A994E15)",
-            border: "1px solid #3D8B7A20", textAlign: "center",
+            background: "linear-gradient(135deg, #3B5FA115, #78996315)",
+            border: "1px solid #3B5FA120", textAlign: "center",
           }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#3D8B7A", fontFamily: "'Fraunces', serif" }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#3B5FA1", fontFamily: "'Fraunces', serif" }}>
               {itemCount}
             </div>
             <div style={{ fontSize: 11, color: "#6b6560", fontWeight: 600, marginTop: 2 }}>
@@ -196,7 +196,7 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
                         }}
                         style={{
                           padding: "4px 8px", borderRadius: 6, border: "none",
-                          background: "#3D8B7A", color: "#fff", fontSize: 10,
+                          background: "#3B5FA1", color: "#fff", fontSize: 10,
                           fontWeight: 700, cursor: "pointer",
                         }}
                       >
@@ -209,8 +209,8 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
                           await updateItem(it.id, { status: "activo" });
                         }}
                         style={{
-                          padding: "4px 8px", borderRadius: 6, border: "1px solid #3D8B7A",
-                          background: "transparent", color: "#3D8B7A", fontSize: 10,
+                          padding: "4px 8px", borderRadius: 6, border: "1px solid #3B5FA1",
+                          background: "transparent", color: "#3B5FA1", fontSize: 10,
                           fontWeight: 700, cursor: "pointer",
                         }}
                       >
@@ -226,7 +226,7 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
                       }}
                       style={{
                         padding: "4px 8px", borderRadius: 6, border: "none",
-                        background: "#FFF0ED", color: "#C44D3D", fontSize: 10,
+                        background: "#F8ECEB", color: "#BB4036", fontSize: 10,
                         fontWeight: 700, cursor: "pointer",
                       }}
                     >
@@ -328,7 +328,7 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
               disabled={saving}
               style={{
                 flex: 2, padding: "11px 0", borderRadius: 10, border: "none",
-                background: saving ? "#aaa" : "linear-gradient(135deg, #3D8B7A, #2d7466)",
+                background: saving ? "#aaa" : "linear-gradient(135deg, #3B5FA1, #2C4778)",
                 color: "#fff", fontSize: 14, fontWeight: 700,
                 cursor: saving ? "wait" : "pointer",
                 fontFamily: "'Fraunces', serif",
@@ -342,8 +342,8 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
             onClick={() => setEditing(true)}
             style={{
               width: "100%", padding: "11px 0", borderRadius: 10, marginBottom: 12,
-              border: "1.5px solid #3D8B7A40", background: "#f0faf7",
-              fontSize: 14, fontWeight: 700, cursor: "pointer", color: "#3D8B7A",
+              border: "1.5px solid #3B5FA140", background: "#EBEFF6",
+              fontSize: 14, fontWeight: 700, cursor: "pointer", color: "#3B5FA1",
             }}
           >
             ✏️ Editar perfil
@@ -355,8 +355,8 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
           onClick={() => { onLogout(); onClose(); }}
           style={{
             width: "100%", padding: "11px 0", borderRadius: 10, border: "none",
-            background: "#FFF0ED",
-            fontSize: 14, fontWeight: 700, cursor: "pointer", color: "#C44D3D",
+            background: "#F8ECEB",
+            fontSize: 14, fontWeight: 700, cursor: "pointer", color: "#BB4036",
           }}
         >
           Cerrar sesión

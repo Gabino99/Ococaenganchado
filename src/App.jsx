@@ -14,6 +14,7 @@ import SellerModal from './components/SellerModal';
 import NotificationsModal from './components/NotificationsModal';
 import AdminPanel from './components/AdminPanel';
 import useAuth from './hooks/useAuth';
+import BrandIcon from './components/BrandIcon';
 import { subscribeItems, loadMoreItems, subscribeAlerts, subscribeUserChats, subscribeNotifications, getOrCreateChat } from './services/firestore';
 import { isUnread, getReadTs } from './components/InboxModal';
 
@@ -266,7 +267,7 @@ export default function App() {
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f2ed" }}>
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: 52, marginBottom: 14 }}>♻️</div>
-          <div style={{ fontFamily: "'Fraunces', serif", fontSize: 18, color: "#3D8B7A", fontWeight: 700 }}>Cargando...</div>
+          <div style={{ fontFamily: "'Fraunces', serif", fontSize: 18, color: "#3B5FA1", fontWeight: 700 }}>Cargando...</div>
         </div>
       </div>
     );
@@ -284,20 +285,15 @@ export default function App() {
         {/* Background texture */}
         <div style={{
           position: "fixed", inset: 0,
-          backgroundImage: `radial-gradient(circle at 20% 30%, rgba(106,153,78,0.08) 0%, transparent 50%),
-                           radial-gradient(circle at 80% 70%, rgba(61,139,122,0.08) 0%, transparent 50%)`,
+          backgroundImage: `radial-gradient(circle at 20% 30%, rgba(120,153,99,0.08) 0%, transparent 50%),
+                           radial-gradient(circle at 80% 70%, rgba(59,95,161,0.08) 0%, transparent 50%)`,
           pointerEvents: "none",
         }} />
 
         {/* Header */}
         <header style={{ padding: "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{
-              width: 38, height: 38, borderRadius: 10,
-              background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 18, boxShadow: "0 2px 8px rgba(61,139,122,0.3)", flexShrink: 0,
-            }}>♻️</div>
+            <BrandIcon size={40} radius={10} />
             <div>
               <h1 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 800, color: "#2d2a26", lineHeight: 1.1 }}>
                 Ococa Enganchado
@@ -311,10 +307,10 @@ export default function App() {
             onClick={() => setShowAuth(true)}
             style={{
               padding: "7px 16px", borderRadius: 10, border: "none",
-              background: "linear-gradient(135deg, #3D8B7A, #2d7466)",
+              background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
               color: "#fff", fontSize: 13, fontWeight: 700,
               cursor: "pointer", fontFamily: "'Fraunces', serif",
-              boxShadow: "0 2px 8px rgba(61,139,122,0.25)",
+              boxShadow: "0 2px 8px rgba(59,95,161,0.25)",
             }}
           >
             Entrar ♻️
@@ -341,10 +337,10 @@ export default function App() {
             onClick={() => setShowAuth(true)}
             style={{
               padding: "15px 0", borderRadius: 14, border: "none",
-              background: "linear-gradient(135deg, #3D8B7A, #2d7466)",
+              background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
               color: "#fff", fontSize: 17, fontWeight: 800,
               cursor: "pointer", fontFamily: "'Fraunces', serif",
-              boxShadow: "0 6px 24px rgba(61,139,122,0.4)",
+              boxShadow: "0 6px 24px rgba(59,95,161,0.4)",
               display: "block", width: "100%", maxWidth: 320, margin: "0 auto 14px",
             }}
           >
@@ -365,9 +361,9 @@ export default function App() {
         {/* Feature cards */}
         <div style={{ padding: "0 20px 60px", display: "flex", flexDirection: "column", gap: 12 }}>
           {[
-            { icon: "🏷️", color: "#3D8B7A", title: "Vendé lo que no usás", desc: "Poné precio y coordiná con compradores de tu comunidad." },
-            { icon: "🔄", color: "#6A994E", title: "Trocá sin plata", desc: "Intercambiá artículos directamente, sin necesidad de dinero." },
-            { icon: "🎁", color: "#E07A5F", title: "Donaciones vecinas", desc: "Dale una segunda vida a lo que ya no necesitás, gratuitamente." },
+            { icon: "🏷️", color: "#3B5FA1", title: "Vendé lo que no usás", desc: "Poné precio y coordiná con compradores de tu comunidad." },
+            { icon: "🔄", color: "#789963", title: "Trocá sin plata", desc: "Intercambiá artículos directamente, sin necesidad de dinero." },
+            { icon: "🎁", color: "#BB4036", title: "Donaciones vecinas", desc: "Dale una segunda vida a lo que ya no necesitás, gratuitamente." },
           ].map((f) => (
             <div key={f.title} style={{
               padding: "16px 18px", borderRadius: 16,
@@ -416,7 +412,7 @@ export default function App() {
         .cat-btn { transition: all 0.15s ease; }
         .cat-btn:hover { transform: scale(1.05); }
         .fab { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .fab:hover { transform: scale(1.08); box-shadow: 0 8px 28px rgba(61,139,122,0.45) !important; }
+        .fab:hover { transform: scale(1.08); box-shadow: 0 8px 28px rgba(59,95,161,0.45) !important; }
         .fab:active { transform: scale(0.95); }
         .auth-btn { transition: all 0.15s ease; }
         .auth-btn:hover { opacity: 0.85; }
@@ -427,9 +423,9 @@ export default function App() {
         style={{
           position: "fixed",
           inset: 0,
-          backgroundImage: `radial-gradient(circle at 20% 30%, rgba(106,153,78,0.06) 0%, transparent 50%),
-                           radial-gradient(circle at 80% 70%, rgba(61,139,122,0.06) 0%, transparent 50%),
-                           radial-gradient(circle at 50% 50%, rgba(224,122,95,0.04) 0%, transparent 60%)`,
+          backgroundImage: `radial-gradient(circle at 20% 30%, rgba(120,153,99,0.06) 0%, transparent 50%),
+                           radial-gradient(circle at 80% 70%, rgba(59,95,161,0.06) 0%, transparent 50%),
+                           radial-gradient(circle at 50% 50%, rgba(187,64,54,0.04) 0%, transparent 60%)`,
           pointerEvents: "none",
           zIndex: 0,
         }}
@@ -467,22 +463,7 @@ export default function App() {
             }}
             title="Ir al inicio"
           >
-            <div
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 10,
-                background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 18,
-                boxShadow: "0 2px 8px rgba(61,139,122,0.3)",
-                flexShrink: 0,
-              }}
-            >
-              ♻️
-            </div>
+            <BrandIcon size={50} radius={12} />
             <div>
               <h1 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 800, color: "#2d2a26", letterSpacing: "-0.3px", lineHeight: 1.1 }}>
                 Ococa Enganchado
@@ -515,11 +496,11 @@ export default function App() {
                 </div>
                 <div style={{
                   width: 34, height: 34, borderRadius: 10,
-                  background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
+                  background: "linear-gradient(135deg, #3B5FA1, #789963)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "#fff", fontSize: 15, fontWeight: 800,
                   fontFamily: "'Fraunces', serif",
-                  boxShadow: "0 2px 8px rgba(61,139,122,0.25)",
+                  boxShadow: "0 2px 8px rgba(59,95,161,0.25)",
                   flexShrink: 0,
                 }}>
                   {displayName.charAt(0).toUpperCase()}
@@ -531,10 +512,10 @@ export default function App() {
                 onClick={() => setShowAuth(true)}
                 style={{
                   padding: "7px 14px", borderRadius: 10, border: "none",
-                  background: "linear-gradient(135deg, #3D8B7A, #2d7466)",
+                  background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
                   color: "#fff", fontSize: 12, fontWeight: 700,
                   cursor: "pointer", fontFamily: "'Fraunces', serif",
-                  boxShadow: "0 2px 8px rgba(61,139,122,0.25)",
+                  boxShadow: "0 2px 8px rgba(59,95,161,0.25)",
                 }}
               >
                 Entrar ♻️
@@ -630,8 +611,8 @@ export default function App() {
         {firebaseItems !== null && firebaseItems.length === 0 && (
           <div style={{
             padding: "10px 14px", borderRadius: 12, marginBottom: 12,
-            background: "linear-gradient(135deg, #3D8B7A15, #6A994E15)",
-            border: "1px solid #3D8B7A30", fontSize: 13, color: "#3D7A3E",
+            background: "linear-gradient(135deg, #3B5FA115, #78996315)",
+            border: "1px solid #3B5FA130", fontSize: 13, color: "#5C7A4E",
             lineHeight: 1.4, textAlign: "center",
           }}>
             📌 Estos son artículos de ejemplo. ¡Sé el primero en publicar algo real!
@@ -706,7 +687,7 @@ export default function App() {
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 4 }}>
                       {item.precio ? (
-                        <span style={{ fontSize: 16, fontWeight: 800, color: "#3D8B7A", fontFamily: "'Fraunces', serif" }}>
+                        <span style={{ fontSize: 16, fontWeight: 800, color: "#3B5FA1", fontFamily: "'Fraunces', serif" }}>
                           {formatColones(item.precio)}
                         </span>
                       ) : (
@@ -732,7 +713,7 @@ export default function App() {
               style={{
                 padding: '10px 28px', borderRadius: 12,
                 border: '1.5px solid #d5d0c8', background: '#fffdf9',
-                fontSize: 13, fontWeight: 700, color: '#3D8B7A',
+                fontSize: 13, fontWeight: 700, color: '#3B5FA1',
                 cursor: loadingMore ? 'wait' : 'pointer',
                 transition: 'all 0.15s',
               }}
@@ -770,9 +751,9 @@ export default function App() {
           onClick={() => { if (!user) { setShowAuth(true); return; } setShowNotifications(true); }}
           style={{
             width: 42, height: 42, borderRadius: 12, border: 'none',
-            background: 'linear-gradient(135deg, #F2CC8F, #C4823A)',
+            background: 'linear-gradient(135deg, #D8BCAD, #A96B49)',
             color: '#fff', fontSize: 18, cursor: 'pointer',
-            boxShadow: '0 3px 14px rgba(196,130,58,0.35)',
+            boxShadow: '0 3px 14px rgba(169,107,73,0.35)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             position: 'relative',
           }}
@@ -783,7 +764,7 @@ export default function App() {
             <span style={{
               position: 'absolute', top: -4, right: -4,
               width: 18, height: 18, borderRadius: 9,
-              background: '#E07A5F', color: '#fff',
+              background: '#BB4036', color: '#fff',
               fontSize: 10, fontWeight: 700,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>{unreadNotifications > 9 ? '9+' : unreadNotifications}</span>
@@ -796,9 +777,9 @@ export default function App() {
           onClick={openInbox}
           style={{
             width: 42, height: 42, borderRadius: 12, border: "none",
-            background: "linear-gradient(135deg, #457B9D, #2d5f80)",
+            background: "linear-gradient(135deg, #467098, #385A7A)",
             color: "#fff", fontSize: 18, cursor: "pointer",
-            boxShadow: "0 3px 14px rgba(69,123,157,0.35)",
+            boxShadow: "0 3px 14px rgba(70,112,152,0.35)",
             display: "flex", alignItems: "center", justifyContent: "center",
             position: "relative",
           }}
@@ -809,7 +790,7 @@ export default function App() {
             <span style={{
               position: "absolute", top: -4, right: -4,
               width: 18, height: 18, borderRadius: 9,
-              background: "#E07A5F", color: "#fff",
+              background: "#BB4036", color: "#fff",
               fontSize: 10, fontWeight: 700,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>{unreadChat > 9 ? "9+" : unreadChat}</span>
@@ -824,11 +805,11 @@ export default function App() {
             height: 42,
             borderRadius: 12,
             border: "none",
-            background: "linear-gradient(135deg, #E07A5F, #c4614a)",
+            background: "linear-gradient(135deg, #BB4036, #8F2F27)",
             color: "#fff",
             fontSize: 16,
             cursor: "pointer",
-            boxShadow: "0 3px 14px rgba(224,122,95,0.35)",
+            boxShadow: "0 3px 14px rgba(187,64,54,0.35)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -855,11 +836,11 @@ export default function App() {
             height: 46,
             borderRadius: 14,
             border: "none",
-            background: "linear-gradient(135deg, #7B68A8, #5a4d80)",
+            background: "linear-gradient(135deg, #2C4778, #223A61)",
             color: "#fff",
             fontSize: 18,
             cursor: "pointer",
-            boxShadow: "0 3px 14px rgba(123,104,168,0.35)",
+            boxShadow: "0 3px 14px rgba(44,71,120,0.35)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -876,11 +857,11 @@ export default function App() {
             height: 56,
             borderRadius: 16,
             border: "none",
-            background: "linear-gradient(135deg, #3D8B7A, #2d7466)",
+            background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
             color: "#fff",
             fontSize: 26,
             cursor: "pointer",
-            boxShadow: "0 4px 20px rgba(61,139,122,0.35)",
+            boxShadow: "0 4px 20px rgba(59,95,161,0.35)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

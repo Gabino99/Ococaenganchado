@@ -103,9 +103,9 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
         <div style={{ textAlign: "center", marginBottom: 20 }}>
           <div style={{
             width: 52, height: 52, borderRadius: 14, margin: "0 auto 12px",
-            background: "linear-gradient(135deg, #3D8B7A, #6A994E)",
+            background: "linear-gradient(135deg, #3B5FA1, #789963)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 24, boxShadow: "0 4px 16px rgba(61,139,122,0.3)",
+            fontSize: 24, boxShadow: "0 4px 16px rgba(59,95,161,0.3)",
           }}>
             {mode === "login" ? "👋" : "🌱"}
           </div>
@@ -126,8 +126,8 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
         {/* Error */}
         {error && (
           <div style={{
-            padding: "10px 12px", borderRadius: 10, background: "#FFF0ED",
-            border: "1px solid #E07A5F40", fontSize: 13, color: "#C44D3D",
+            padding: "10px 12px", borderRadius: 10, background: "#F8ECEB",
+            border: "1px solid #BB403640", fontSize: 13, color: "#BB4036",
             marginBottom: 12, lineHeight: 1.4, textAlign: "center",
           }}>
             {error}
@@ -193,7 +193,7 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
             disabled={loading}
             style={{
               width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
-              background: loading ? "#aaa" : "linear-gradient(135deg, #3D8B7A, #2d7466)",
+              background: loading ? "#aaa" : "linear-gradient(135deg, #3B5FA1, #2C4778)",
               color: "#fff", fontSize: 15, fontWeight: 700,
               cursor: loading ? "wait" : "pointer",
               fontFamily: "'Fraunces', serif",
@@ -216,7 +216,7 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
               <button
                 onClick={() => { setMode("register"); setError(null); }}
                 style={{
-                  background: "none", border: "none", color: "#3D8B7A",
+                  background: "none", border: "none", color: "#3B5FA1",
                   fontWeight: 700, cursor: "pointer", fontSize: 13,
                   textDecoration: "underline",
                 }}
@@ -230,7 +230,7 @@ export default function AuthModal({ open, onClose, onRegister, onLogin }) {
               <button
                 onClick={() => { setMode("login"); setError(null); }}
                 style={{
-                  background: "none", border: "none", color: "#3D8B7A",
+                  background: "none", border: "none", color: "#3B5FA1",
                   fontWeight: 700, cursor: "pointer", fontSize: 13,
                   textDecoration: "underline",
                 }}

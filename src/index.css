@@ -21,7 +21,7 @@ body {
 ::-webkit-scrollbar-thumb { background: #c5bfb7; border-radius: 4px; }
 
 input:focus, textarea:focus {
-  border-color: #3D8B7A !important;
-  box-shadow: 0 0 0 3px rgba(61,139,122,0.12);
+  border-color: #3B5FA1 !important;
+  box-shadow: 0 0 0 3px rgba(59,95,161,0.12);
   outline: none;
 }

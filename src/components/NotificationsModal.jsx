@@ -81,7 +81,7 @@ export default function NotificationsModal({ open, onClose, user, onItemClick })
               {unreadCount > 0 && (
                 <span style={{
                   marginLeft: 8, fontSize: 12, fontWeight: 700,
-                  background: '#E07A5F', color: '#fff',
+                  background: '#BB4036', color: '#fff',
                   padding: '2px 7px', borderRadius: 10,
                 }}>
                   {unreadCount}
@@ -125,9 +125,9 @@ export default function NotificationsModal({ open, onClose, user, onItemClick })
                 onClick={() => handleNotifClick(notif)}
                 style={{
                   display: 'flex', gap: 12, padding: '12px 14px',
-                  background: notif.leido ? '#faf8f5' : '#f0faf7',
+                  background: notif.leido ? '#faf8f5' : '#EBEFF6',
                   borderRadius: 14, cursor: 'pointer',
-                  border: notif.leido ? '1px solid #e0dbd4' : '1.5px solid #3D8B7A30',
+                  border: notif.leido ? '1px solid #e0dbd4' : '1.5px solid #3B5FA130',
                   textAlign: 'left', width: '100%',
                   transition: 'all 0.15s',
                 }}
@@ -135,8 +135,8 @@ export default function NotificationsModal({ open, onClose, user, onItemClick })
                 {/* Icon */}
                 <div style={{
                   width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                  background: notif.leido ? '#e0dbd4' : 'linear-gradient(135deg, #3D8B7A20, #6A994E20)',
-                  border: notif.leido ? 'none' : '1.5px solid #3D8B7A30',
+                  background: notif.leido ? '#e0dbd4' : 'linear-gradient(135deg, #3B5FA120, #78996320)',
+                  border: notif.leido ? 'none' : '1.5px solid #3B5FA130',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 18,
                 }}>
@@ -155,7 +155,7 @@ export default function NotificationsModal({ open, onClose, user, onItemClick })
                     {!notif.leido && (
                       <span style={{
                         width: 6, height: 6, borderRadius: 3,
-                        background: '#3D8B7A', flexShrink: 0,
+                        background: '#3B5FA1', flexShrink: 0,
                       }} />
                     )}
                   </div>
