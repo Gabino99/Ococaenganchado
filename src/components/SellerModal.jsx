@@ -61,6 +61,19 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
   const displayName = sellerProfile?.nombre || sellerName || "Vendedor";
   const myReview = currentUser ? reviews.find(r => r.buyerId === currentUser.uid) : null;
   const canReview = currentUser && currentUser.uid !== sellerId;
+  const canContact = currentUser?.uid !== sellerId;
+
+  const handleWhatsApp = () => {
+    const phone = (sellerProfile?.telefono || "").replace(/[^0-9]/g, "");
+    if (!phone) return;
+    const costaRicaPhone = phone.length === 8 ? `506${phone}` : phone;
+    const msg = encodeURIComponent(
+      contextItem
+        ? `¡Hola! Vi tu artículo "${contextItem.titulo}" en Ococa Enganchado y me interesa. ¿Está disponible? 🌿`
+        : `¡Hola! Te contacto desde Ococa Enganchado. 🌿`
+    );
+    window.open(`https://wa.me/${costaRicaPhone}?text=${msg}`, "_blank");
+  };
 
   // Count per star for the bar chart
   const starCounts = [5, 4, 3, 2, 1].map(s => ({
@@ -149,6 +162,24 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
             </div>
           )}
         </div>
+
+        {/* WhatsApp contact */}
+        {canContact && sellerProfile?.telefono && (
+          <button
+            onClick={handleWhatsApp}
+            style={{
+              width: "100%", padding: "12px 0", borderRadius: 12, border: "none",
+              background: "linear-gradient(135deg, #25D366, #128C7E)",
+              color: "#fff", fontSize: 14, fontWeight: 700,
+              cursor: "pointer", fontFamily: "'Fraunces', serif",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              boxShadow: "0 3px 10px rgba(37,211,102,0.25)",
+              marginBottom: 16,
+            }}
+          >
+            💬 Contactar por WhatsApp
+          </button>
+        )}
 
         {/* Rating breakdown */}
         {count > 0 && (
