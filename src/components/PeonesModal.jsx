@@ -41,9 +41,128 @@ function whatsappLink(telefono, msg) {
   return `https://wa.me/${costaRicaPhone}?text=${encodeURIComponent(msg)}`;
 }
 
+function PeonCard({ p, user, filterDate }) {
+  const of = oficioInfo(p.oficio);
+  const isMine = p.autorId === user?.uid;
+  const msg = p.tipo === 'oferta'
+    ? `¡Hola! Vi que estás disponible como peón en Ococa Enganchado y me interesa contactarte.`
+    : `¡Hola! Vi tu publicación buscando un peón en Ococa Enganchado y quiero ofrecerme.`;
+  const link = whatsappLink(p.autorTelefono, msg);
+  return (
+    <div style={{
+      padding: 12, borderRadius: 14,
+      background: p.estado === 'cerrado' ? "#f5f2ed" : "#fff",
+      border: "1.5px solid #e0dbd4",
+      opacity: p.estado === 'cerrado' ? 0.7 : 1,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+        <span style={{ fontSize: 11, color: "#2C4778", fontWeight: 700 }}>{of.icon} {of.label}</span>
+        {p.estado === 'cerrado' && (
+          <span style={{ fontSize: 10, color: "#8a847d", fontWeight: 700 }}>· CERRADO</span>
+        )}
+      </div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: "#2d2a26" }}>{p.titulo}</div>
+      {p.descripcion && (
+        <div style={{ fontSize: 12, color: "#7a756f", marginTop: 2 }}>{p.descripcion}</div>
+      )}
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
+        {(p.fechas || []).map(f => (
+          <span key={f} style={{
+            padding: "2px 7px", borderRadius: 6, fontSize: 11, fontWeight: 700,
+            background: filterDate === f ? "#2C4778" : "#EBEFF6",
+            color: filterDate === f ? "#fff" : "#3B5FA1",
+          }}>
+            {formatDateShort(f)}
+          </span>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+        <span style={{ fontSize: 11, color: "#b0aaa3" }}>
+          {p.autorNombre}{p.comunidad ? ` · ${p.comunidad}` : ""}
+        </span>
+        <div style={{ display: "flex", gap: 6 }}>
+          {isMine ? (
+            <>
+              {p.estado !== 'cerrado' && (
+                <button
+                  onClick={() => updatePeon(p.id, { estado: 'cerrado' })}
+                  style={{
+                    padding: "5px 9px", borderRadius: 7, border: "none",
+                    background: "#f0ede8", color: "#6b6560", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                  }}
+                >
+                  Cerrar
+                </button>
+              )}
+              <button
+                onClick={() => { if (confirm("¿Eliminar esta publicación?")) deletePeon(p.id); }}
+                style={{
+                  padding: "5px 9px", borderRadius: 7, border: "none",
+                  background: "#F8ECEB", color: "#BB4036", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                }}
+              >
+                Borrar
+              </button>
+            </>
+          ) : link ? (
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: "5px 10px", borderRadius: 7, textDecoration: "none",
+                background: "linear-gradient(135deg, #25D366, #128C7E)",
+                color: "#fff", fontSize: 11, fontWeight: 700,
+              }}
+            >
+              WhatsApp
+            </a>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PeonSection({ title, emptyText, items, user, filterDate, onAdd, addLabel }) {
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+        <h3 style={{
+          margin: 0, fontSize: 13, fontWeight: 700,
+          color: "#8a847d", textTransform: "uppercase", letterSpacing: "0.5px",
+        }}>
+          {title}
+        </h3>
+        <button
+          onClick={onAdd}
+          style={{
+            padding: "5px 10px", borderRadius: 8, border: "1.5px solid #2C477840",
+            background: "#EBEFF6", fontSize: 11, fontWeight: 700, cursor: "pointer", color: "#2C4778",
+          }}
+        >
+          {addLabel}
+        </button>
+      </div>
+      {items.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "18px 10px", color: "#bbb", background: "#faf8f5", borderRadius: 12 }}>
+          <p style={{ fontSize: 12, margin: 0 }}>{emptyText}</p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {items.map((p) => (
+            <PeonCard key={p.id} p={p} user={user} filterDate={filterDate} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function PeonesModal({ open, onClose, user, profile }) {
   const [peones, setPeones] = useState([]);
-  const [tab, setTab] = useState('oferta'); // 'oferta' | 'busqueda'
   const [filterDate, setFilterDate] = useState('');
   const [mode, setMode] = useState('list'); // 'list' | 'form'
 
@@ -67,12 +186,13 @@ export default function PeonesModal({ open, onClose, user, profile }) {
 
   if (!open) return null;
 
-  const filtered = peones.filter((p) => {
-    if (p.tipo !== tab) return false;
+  const matchesFilter = (p) => {
     if (p.estado === 'cerrado' && p.autorId !== user?.uid) return false;
     if (filterDate && !(p.fechas || []).includes(filterDate)) return false;
     return true;
-  });
+  };
+  const ofertas = peones.filter((p) => p.tipo === 'oferta' && matchesFilter(p));
+  const busquedas = peones.filter((p) => p.tipo === 'busqueda' && matchesFilter(p));
 
   const addFecha = () => {
     if (!dateInput) return;
@@ -118,7 +238,6 @@ export default function PeonesModal({ open, onClose, user, profile }) {
         autorTelefono: telefono.trim(),
       });
       resetForm();
-      setTab(tipo);
       setMode('list');
     } catch (err) {
       console.error(err);
@@ -343,33 +462,8 @@ export default function PeonesModal({ open, onClose, user, profile }) {
           </>
         ) : (
           <>
-            {/* Sub-tabs */}
-            <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
-              {[
-                { id: 'oferta', label: 'Disponibles' },
-                { id: 'busqueda', label: 'Se busca' },
-              ].map(t => {
-                const active = tab === t.id;
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => setTab(t.id)}
-                    style={{
-                      flex: 1, padding: "8px 0", borderRadius: 8,
-                      border: active ? "2px solid #2C4778" : "1.5px solid #d5d0c8",
-                      background: active ? "#2C477815" : "transparent",
-                      fontSize: 13, fontWeight: active ? 700 : 400,
-                      cursor: "pointer", color: active ? "#2C4778" : "#8a847d",
-                    }}
-                  >
-                    {t.label}
-                  </button>
-                );
-              })}
-            </div>
-
             {/* Date filter */}
-            <div style={{ marginBottom: 14 }}>
+            <div style={{ marginBottom: 16 }}>
               <label style={labelStyle}>Filtrar por fecha</label>
               <div style={{ display: "flex", gap: 6 }}>
                 <input
@@ -393,118 +487,25 @@ export default function PeonesModal({ open, onClose, user, profile }) {
               </div>
             </div>
 
-            {/* List */}
-            {filtered.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "30px 10px", color: "#999" }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>👷</div>
-                <p style={{ fontSize: 13 }}>
-                  {tab === 'oferta' ? 'No hay peones disponibles todavía' : 'Nadie está buscando peón todavía'}
-                </p>
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
-                {filtered.map((p) => {
-                  const of = oficioInfo(p.oficio);
-                  const isMine = p.autorId === user?.uid;
-                  const msg = p.tipo === 'oferta'
-                    ? `¡Hola! Vi que estás disponible como peón en Ococa Enganchado y me interesa contactarte.`
-                    : `¡Hola! Vi tu publicación buscando un peón en Ococa Enganchado y quiero ofrecerme.`;
-                  const link = whatsappLink(p.autorTelefono, msg);
-                  return (
-                    <div key={p.id} style={{
-                      padding: 12, borderRadius: 14,
-                      background: p.estado === 'cerrado' ? "#f5f2ed" : "#fff",
-                      border: "1.5px solid #e0dbd4",
-                      opacity: p.estado === 'cerrado' ? 0.7 : 1,
-                    }}>
-                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-                        <div style={{ minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-                            <span style={{ fontSize: 11, color: "#2C4778", fontWeight: 700 }}>{of.icon} {of.label}</span>
-                            {p.estado === 'cerrado' && (
-                              <span style={{ fontSize: 10, color: "#8a847d", fontWeight: 700 }}>· CERRADO</span>
-                            )}
-                          </div>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: "#2d2a26" }}>{p.titulo}</div>
-                          {p.descripcion && (
-                            <div style={{ fontSize: 12, color: "#7a756f", marginTop: 2 }}>{p.descripcion}</div>
-                          )}
-                        </div>
-                      </div>
+            <PeonSection
+              title="👷 Disponibles"
+              emptyText="No hay peones disponibles todavía"
+              items={ofertas}
+              user={user}
+              filterDate={filterDate}
+              addLabel="+ Ofrecerme"
+              onAdd={() => { setTipo('oferta'); setMode('form'); }}
+            />
 
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
-                        {(p.fechas || []).map(f => (
-                          <span key={f} style={{
-                            padding: "2px 7px", borderRadius: 6, fontSize: 11, fontWeight: 700,
-                            background: filterDate === f ? "#2C4778" : "#EBEFF6",
-                            color: filterDate === f ? "#fff" : "#3B5FA1",
-                          }}>
-                            {formatDateShort(f)}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-                        <span style={{ fontSize: 11, color: "#b0aaa3" }}>
-                          {p.autorNombre}{p.comunidad ? ` · ${p.comunidad}` : ""}
-                        </span>
-                        <div style={{ display: "flex", gap: 6 }}>
-                          {isMine ? (
-                            <>
-                              {p.estado !== 'cerrado' && (
-                                <button
-                                  onClick={() => updatePeon(p.id, { estado: 'cerrado' })}
-                                  style={{
-                                    padding: "5px 9px", borderRadius: 7, border: "none",
-                                    background: "#f0ede8", color: "#6b6560", fontSize: 11, fontWeight: 700, cursor: "pointer",
-                                  }}
-                                >
-                                  Cerrar
-                                </button>
-                              )}
-                              <button
-                                onClick={() => { if (confirm("¿Eliminar esta publicación?")) deletePeon(p.id); }}
-                                style={{
-                                  padding: "5px 9px", borderRadius: 7, border: "none",
-                                  background: "#F8ECEB", color: "#BB4036", fontSize: 11, fontWeight: 700, cursor: "pointer",
-                                }}
-                              >
-                                Borrar
-                              </button>
-                            </>
-                          ) : link ? (
-                            <a
-                              href={link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                padding: "5px 10px", borderRadius: 7, textDecoration: "none",
-                                background: "linear-gradient(135deg, #25D366, #128C7E)",
-                                color: "#fff", fontSize: 11, fontWeight: 700,
-                              }}
-                            >
-                              WhatsApp
-                            </a>
-                          ) : null}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            <button
-              onClick={() => { setTipo(tab); setMode('form'); }}
-              style={{
-                width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
-                background: "linear-gradient(135deg, #2C4778, #223A61)",
-                color: "#fff", fontSize: 15, fontWeight: 700,
-                cursor: "pointer", fontFamily: "'Fraunces', serif",
-              }}
-            >
-              + Publicar
-            </button>
+            <PeonSection
+              title="🔍 Se busca"
+              emptyText="Nadie está buscando peón todavía"
+              items={busquedas}
+              user={user}
+              filterDate={filterDate}
+              addLabel="+ Publicar"
+              onAdd={() => { setTipo('busqueda'); setMode('form'); }}
+            />
           </>
         )}
       </div>
