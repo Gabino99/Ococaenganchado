@@ -8,9 +8,9 @@ export const CATEGORIES = [
 ];
 
 export const TIPOS = [
-  { id: "venta", label: "Venta", color: "#3B5FA1" },
-  { id: "trueque", label: "Trueque", color: "#BB4036" },
-  { id: "donacion", label: "Donación", color: "#789963" },
+  { id: "venta", label: "Venta", icon: "🏷️", color: "#3B5FA1" },
+  { id: "trueque", label: "Trueque", icon: "🔄", color: "#BB4036" },
+  { id: "donacion", label: "Donación", icon: "🎁", color: "#789963" },
 ];
 
 export const OFICIOS = [

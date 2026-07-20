@@ -601,7 +601,7 @@ export default function App() {
                     transition: "all 0.15s",
                   }}
                 >
-                  {t.label}
+                  {t.icon} {t.label}
                 </button>
                 {i === 0 && (
                   <button
