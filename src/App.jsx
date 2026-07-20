@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import { CATEGORIES, TIPOS, SAMPLE_ITEMS, formatColones } from './data';
 import ItemImage from './components/ItemImage';
 import Badge from './components/Badge';
@@ -582,27 +582,47 @@ export default function App() {
 
         {/* Type filter */}
         <div style={{ display: "flex", gap: 6, paddingBottom: 12 }}>
-          {TIPOS.map((t) => {
+          {TIPOS.map((t, i) => {
             const active = filtroTipo === t.id;
             return (
-              <button
-                key={t.id}
-                onClick={() => setFiltroTipo(active ? null : t.id)}
-                style={{
-                  flex: 1,
-                  padding: "6px 0",
-                  borderRadius: 8,
-                  border: active ? `2px solid ${t.color}` : "1.5px solid #ddd8d0",
-                  background: active ? t.color + "12" : "transparent",
-                  fontSize: 12,
-                  fontWeight: active ? 700 : 500,
-                  color: active ? t.color : "#8a847d",
-                  cursor: "pointer",
-                  transition: "all 0.15s",
-                }}
-              >
-                {t.label}
-              </button>
+              <Fragment key={t.id}>
+                <button
+                  onClick={() => setFiltroTipo(active ? null : t.id)}
+                  style={{
+                    flex: 1,
+                    padding: "6px 0",
+                    borderRadius: 8,
+                    border: active ? `2px solid ${t.color}` : "1.5px solid #ddd8d0",
+                    background: active ? t.color + "12" : "transparent",
+                    fontSize: 12,
+                    fontWeight: active ? 700 : 500,
+                    color: active ? t.color : "#8a847d",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {t.label}
+                </button>
+                {i === 0 && (
+                  <button
+                    onClick={handlePeones}
+                    style={{
+                      flex: 1,
+                      padding: "6px 0",
+                      borderRadius: 8,
+                      border: "1.5px solid #ddd8d0",
+                      background: "transparent",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      color: "#8a847d",
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    👷 Peones
+                  </button>
+                )}
+              </Fragment>
             );
           })}
         </div>
@@ -830,28 +850,6 @@ export default function App() {
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>{savedAlerts.filter(a => a.activo).length}</span>
           )}
-        </button>
-
-        <button
-          className="fab"
-          onClick={handlePeones}
-          style={{
-            width: 42,
-            height: 42,
-            borderRadius: 12,
-            border: "none",
-            background: "linear-gradient(135deg, #2C4778, #223A61)",
-            color: "#fff",
-            fontSize: 18,
-            cursor: "pointer",
-            boxShadow: "0 3px 14px rgba(44,71,120,0.35)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          title="Mano de obra · Peones"
-        >
-          👷
         </button>
 
         <button
