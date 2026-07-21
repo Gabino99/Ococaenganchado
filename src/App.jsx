@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, Fragment } from 'react';
-import { CATEGORIES, TIPOS, SAMPLE_ITEMS, formatColones } from './data';
+import { CATEGORIES, TIPOS, SAMPLE_ITEMS, formatColones, formatFecha } from './data';
 import ItemImage from './components/ItemImage';
 import Badge from './components/Badge';
 import NewItemModal from './components/NewItemModal';
@@ -798,7 +798,7 @@ export default function App() {
                         <span />
                       )}
                       <span style={{ fontSize: 11, color: "#7a756f" }}>
-                        {item.autorNombre || item.autor} · {item.fecha || "Reciente"}
+                        {item.autorNombre || item.autor} · {formatFecha(item)}
                       </span>
                     </div>
                   </div>

@@ -128,3 +128,22 @@ export function formatColones(n) {
   if (n == null) return null;
   return "₡" + n.toLocaleString("es-CR");
 }
+
+// Tiempo relativo desde el timestamp real de Firestore (creadoEn).
+// Cae al string `fecha` guardado (p. ej. "Justo ahora" recién publicado,
+// o las fechas de los artículos de ejemplo) cuando no hay timestamp.
+export function formatFecha(item) {
+  const ts = item?.creadoEn;
+  if (ts && typeof ts.toDate === "function") {
+    const d = ts.toDate();
+    const mins = Math.floor((Date.now() - d.getTime()) / 60000);
+    if (mins < 1) return "Justo ahora";
+    if (mins < 60) return `Hace ${mins} min`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `Hace ${hrs}h`;
+    const days = Math.floor(hrs / 24);
+    if (days < 7) return `Hace ${days} día${days > 1 ? "s" : ""}`;
+    return d.toLocaleDateString("es-CR");
+  }
+  return item?.fecha || "Reciente";
+}
