@@ -85,7 +85,7 @@ export default function InboxModal({ open, onClose, user, onOpenChat, unreadCoun
               )}
             </div>
           </div>
-          <button onClick={onClose} style={{
+          <button onClick={onClose} aria-label="Cerrar" style={{
             background: "none", border: "none", fontSize: 20,
             cursor: "pointer", color: "#999", padding: 4,
           }}>✕</button>
@@ -166,7 +166,7 @@ export default function InboxModal({ open, onClose, user, onOpenChat, unreadCoun
                       </div>
                     </div>
                     <div style={{
-                      fontSize: 12, color: "#aaa", fontWeight: 500,
+                      fontSize: 12, color: "#7a756f", fontWeight: 500,
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                       marginBottom: 2,
                     }}>

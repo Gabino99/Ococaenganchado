@@ -79,7 +79,7 @@ function PeonCard({ p, user, filterDate }) {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
-        <span style={{ fontSize: 11, color: "#b0aaa3" }}>
+        <span style={{ fontSize: 11, color: "#7a756f" }}>
           {p.autorNombre}{p.comunidad ? ` · ${p.comunidad}` : ""}
         </span>
         <div style={{ display: "flex", gap: 6 }}>
@@ -278,7 +278,7 @@ export default function PeonesModal({ open, onClose, user, profile }) {
           <h2 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 20, color: "#2d2a26" }}>
             👷 Mano de obra
           </h2>
-          <button onClick={closeModal}
+          <button onClick={closeModal} aria-label="Cerrar"
             style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999", padding: 4 }}>✕</button>
         </div>
 
@@ -395,6 +395,7 @@ export default function PeonesModal({ open, onClose, user, profile }) {
                       {formatDateShort(f)}
                       <button
                         onClick={() => removeFecha(f)}
+                        aria-label="Quitar fecha"
                         style={{ background: "none", border: "none", cursor: "pointer", color: "#3B5FA1", fontSize: 12, padding: 0, lineHeight: 1 }}
                       >✕</button>
                     </span>

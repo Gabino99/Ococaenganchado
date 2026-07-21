@@ -25,3 +25,8 @@ input:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(59,95,161,0.12);
   outline: none;
 }
+
+/* 16px mínimo en campos de texto: evita el zoom automático de iOS al enfocar */
+input, textarea, select {
+  font-size: 16px !important;
+}

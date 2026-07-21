@@ -142,7 +142,7 @@ export default function ProviderPreferences({ open, onClose, userId, savedAlerts
               Mis alertas
             </h2>
           </div>
-          <button onClick={onClose}
+          <button onClick={onClose} aria-label="Cerrar"
             style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999", padding: 4 }}>✕</button>
         </div>
 

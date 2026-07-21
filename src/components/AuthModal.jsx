@@ -308,6 +308,7 @@ export default function AuthModal({ open, onClose, onRegister, onLogin, onResetP
         {/* Close */}
         <button
           onClick={resetAndClose}
+          aria-label="Cerrar"
           style={{
             position: "absolute", top: 16, right: 16,
             background: "none", border: "none", fontSize: 20,

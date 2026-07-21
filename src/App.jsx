@@ -93,7 +93,7 @@ export default function App() {
         notifs
           .filter((n) => !n.leido && !prevIds.has(n.id))
           .forEach((n) => {
-            if (Notification.permission === 'granted') {
+            if ('Notification' in window && Notification.permission === 'granted') {
               new Notification('Ococa: nuevo artículo para vos 🌿', {
                 body: n.itemTitulo,
                 icon: '/icons/icon-192.png',
@@ -118,7 +118,7 @@ export default function App() {
       setUnreadChat(count);
 
       // Browser notification on new message (after initial load)
-      if (initialized && Notification.permission === "granted" && document.visibilityState !== "visible") {
+      if (initialized && 'Notification' in window && Notification.permission === "granted" && document.visibilityState !== "visible") {
         const newChats = chats.filter(c => {
           if (!c.lastMessageAt || c.lastAutorId === user.uid) return false;
           const ts = c.lastMessageAt?.toMillis ? c.lastMessageAt.toMillis() : 0;
@@ -206,9 +206,25 @@ export default function App() {
 
   const displayName = profile?.nombre || user?.displayName || "Usuario";
 
+  const iconBtnStyle = {
+    width: 34, height: 34, borderRadius: 10,
+    border: "1.5px solid #e0dbd4", background: "#fffdf9",
+    fontSize: 15, cursor: "pointer", padding: 0, flexShrink: 0,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    position: "relative",
+  };
+
+  const iconBadgeStyle = {
+    position: "absolute", top: -5, right: -5,
+    minWidth: 16, height: 16, borderRadius: 8, padding: "0 3px",
+    background: "#BB4036", color: "#fff",
+    fontSize: 9, fontWeight: 700, lineHeight: 1,
+    display: "flex", alignItems: "center", justifyContent: "center",
+  };
+
   const openInbox = () => {
     if (!user) { setShowAuth(true); return; }
-    if (Notification.permission === "default") Notification.requestPermission();
+    if ('Notification' in window && Notification.permission === "default") Notification.requestPermission();
     setShowInbox(true);
   };
 
@@ -292,7 +308,8 @@ export default function App() {
         }} />
 
         {/* Header */}
-        <header style={{ padding: "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <header style={{ padding: "18px 20px" }}>
+          <div style={{ maxWidth: 560, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <BrandIcon size={40} radius={10} />
             <div>
@@ -316,6 +333,7 @@ export default function App() {
           >
             Entrar ♻️
           </button>
+          </div>
         </header>
 
         {/* Hero */}
@@ -360,7 +378,7 @@ export default function App() {
         </div>
 
         {/* Feature cards */}
-        <div style={{ padding: "0 20px 60px", display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ padding: "0 20px 60px", display: "flex", flexDirection: "column", gap: 12, maxWidth: 560, margin: "0 auto" }}>
           {[
             { icon: "🏷️", color: "#3B5FA1", title: "Vendé lo que no usás", desc: "Poné precio y coordiná con compradores de tu comunidad." },
             { icon: "🔄", color: "#789963", title: "Trocá sin plata", desc: "Intercambiá artículos directamente, sin necesidad de dinero." },
@@ -420,6 +438,10 @@ export default function App() {
         .fab:active { transform: scale(0.95); }
         .auth-btn { transition: all 0.15s ease; }
         .auth-btn:hover { opacity: 0.85; }
+        .header-icon { transition: transform 0.15s ease, background 0.15s ease; }
+        .header-icon:hover { transform: scale(1.08); background: #f5f2ed !important; }
+        .profile-names { display: none; }
+        @media (min-width: 480px) { .profile-names { display: block; } }
       `}</style>
 
       {/* Background texture */}
@@ -447,11 +469,13 @@ export default function App() {
           padding: "16px 16px 0",
         }}
       >
+        <div style={{ maxWidth: 560, margin: "0 auto" }}>
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            gap: 8,
             marginBottom: 12,
             opacity: loaded ? 1 : 0,
             transform: loaded ? "none" : "translateY(-10px)",
@@ -461,58 +485,109 @@ export default function App() {
           <button
             onClick={goHome}
             style={{
-              display: "flex", alignItems: "center", gap: 10,
+              display: "flex", alignItems: "center", gap: 8,
               background: "none", border: "none", cursor: "pointer", padding: 0,
-              textAlign: "left",
+              textAlign: "left", minWidth: 0,
             }}
             title="Ir al inicio"
           >
-            <BrandIcon size={50} radius={12} />
-            <div>
-              <h1 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 800, color: "#2d2a26", letterSpacing: "-0.3px", lineHeight: 1.1 }}>
+            <BrandIcon size={40} radius={10} />
+            <div style={{ minWidth: 0 }}>
+              <h1 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 17, fontWeight: 800, color: "#2d2a26", letterSpacing: "-0.3px", lineHeight: 1.1, whiteSpace: "nowrap" }}>
                 Ococa Enganchado
               </h1>
-              <p style={{ margin: 0, fontSize: 11, color: "#8a847d", letterSpacing: "0.5px", fontWeight: 600 }}>
+              <p style={{ margin: 0, fontSize: 10, color: "#8a847d", letterSpacing: "0.5px", fontWeight: 600, whiteSpace: "nowrap" }}>
                 ECONOMÍA CIRCULAR · OCOCA
               </p>
             </div>
           </button>
 
           {/* Auth section */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {user ? (
-              <button
-                className="auth-btn"
-                onClick={() => setShowProfile(true)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  background: "none", border: "none", cursor: "pointer", padding: 0,
-                }}
-                title="Ver perfil"
-              >
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#2d2a26", lineHeight: 1.2 }}>
-                    {displayName}
+              <>
+                {isAdmin && (
+                  <button
+                    className="header-icon"
+                    onClick={() => setShowAdmin(true)}
+                    aria-label="Panel de administración"
+                    title="Panel de administración"
+                    style={iconBtnStyle}
+                  >
+                    🛠️
+                  </button>
+                )}
+                <button
+                  className="header-icon"
+                  onClick={handleAlerts}
+                  aria-label="Mis alertas"
+                  title="Mis alertas"
+                  style={iconBtnStyle}
+                >
+                  🔔
+                  {savedAlerts.filter(a => a.activo).length > 0 && (
+                    <span style={iconBadgeStyle}>{savedAlerts.filter(a => a.activo).length}</span>
+                  )}
+                </button>
+                <button
+                  className="header-icon"
+                  onClick={openInbox}
+                  aria-label="Mensajes"
+                  title="Plaza Ococa · Chat"
+                  style={iconBtnStyle}
+                >
+                  💬
+                  {unreadChat > 0 && (
+                    <span style={iconBadgeStyle}>{unreadChat > 9 ? "9+" : unreadChat}</span>
+                  )}
+                </button>
+                <button
+                  className="header-icon"
+                  onClick={() => setShowNotifications(true)}
+                  aria-label="Mis notificaciones"
+                  title="Mis notificaciones"
+                  style={iconBtnStyle}
+                >
+                  📬
+                  {unreadNotifications > 0 && (
+                    <span style={iconBadgeStyle}>{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>
+                  )}
+                </button>
+                <button
+                  className="auth-btn"
+                  onClick={() => setShowProfile(true)}
+                  aria-label="Ver perfil"
+                  style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    background: "none", border: "none", cursor: "pointer", padding: 0,
+                    marginLeft: 2,
+                  }}
+                  title="Ver perfil"
+                >
+                  <div className="profile-names" style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#2d2a26", lineHeight: 1.2 }}>
+                      {displayName}
+                    </div>
+                    <div style={{ fontSize: 11, color: "#8a847d", fontWeight: 500 }}>
+                      {profile?.comunidad || "Ver perfil"}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 11, color: "#8a847d", fontWeight: 500 }}>
-                    {profile?.comunidad || "Ver perfil"}
+                  <div style={{
+                    width: 34, height: 34, borderRadius: 10,
+                    background: profile?.fotoURL ? "#e0dbd4" : "linear-gradient(135deg, #3B5FA1, #789963)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    color: "#fff", fontSize: 15, fontWeight: 800,
+                    fontFamily: "'Fraunces', serif",
+                    boxShadow: "0 2px 8px rgba(59,95,161,0.25)",
+                    flexShrink: 0,
+                    overflow: "hidden",
+                  }}>
+                    {profile?.fotoURL ? (
+                      <img src={profile.fotoURL} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : displayName.charAt(0).toUpperCase()}
                   </div>
-                </div>
-                <div style={{
-                  width: 34, height: 34, borderRadius: 10,
-                  background: profile?.fotoURL ? "#e0dbd4" : "linear-gradient(135deg, #3B5FA1, #789963)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "#fff", fontSize: 15, fontWeight: 800,
-                  fontFamily: "'Fraunces', serif",
-                  boxShadow: "0 2px 8px rgba(59,95,161,0.25)",
-                  flexShrink: 0,
-                  overflow: "hidden",
-                }}>
-                  {profile?.fotoURL ? (
-                    <img src={profile.fotoURL} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  ) : displayName.charAt(0).toUpperCase()}
-                </div>
-              </button>
+                </button>
+              </>
             ) : (
               <button
                 className="auth-btn"
@@ -614,13 +689,14 @@ export default function App() {
                       flex: 1,
                       padding: "6px 0",
                       borderRadius: 8,
-                      border: "1.5px solid #ddd8d0",
-                      background: "transparent",
+                      border: "none",
+                      background: "linear-gradient(135deg, #A96B49, #8a5638)",
                       fontSize: 12,
-                      fontWeight: 500,
-                      color: "#8a847d",
+                      fontWeight: 700,
+                      color: "#fff",
                       cursor: "pointer",
                       transition: "all 0.15s",
+                      boxShadow: "0 2px 6px rgba(169,107,73,0.3)",
                     }}
                   >
                     👷 Peones
@@ -630,10 +706,11 @@ export default function App() {
             );
           })}
         </div>
+        </div>
       </header>
 
       {/* Items List */}
-      <main style={{ padding: "12px 12px 100px", position: "relative", zIndex: 1 }}>
+      <main style={{ padding: "12px 12px 100px", position: "relative", zIndex: 1, maxWidth: 560, margin: "0 auto" }}>
         {/* Show sample data banner */}
         {firebaseItems !== null && firebaseItems.length === 0 && (
           <div style={{
@@ -679,7 +756,7 @@ export default function App() {
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                         <Badge tipo={item.tipo} status={item.status} />
-                        {cat && <span style={{ fontSize: 10, color: "#aaa" }}>{cat.icon} {cat.label}</span>}
+                        {cat && <span style={{ fontSize: 11, color: "#7a756f" }}>{cat.icon} {cat.label}</span>}
                       </div>
                       <h3
                         style={{
@@ -720,7 +797,7 @@ export default function App() {
                       ) : (
                         <span />
                       )}
-                      <span style={{ fontSize: 10, color: "#b0aaa3" }}>
+                      <span style={{ fontSize: 11, color: "#7a756f" }}>
                         {item.autorNombre || item.autor} · {item.fecha || "Reciente"}
                       </span>
                     </div>
@@ -753,114 +830,13 @@ export default function App() {
 
       <AboutFooter />
 
-      {/* FAB Menu */}
-      <div style={{ position: 'fixed', bottom: 24, right: 20, zIndex: 50, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
-
-        {/* Admin FAB — solo para admins */}
-        {isAdmin && (
-          <button
-            className="fab"
-            onClick={() => setShowAdmin(true)}
-            style={{
-              width: 42, height: 42, borderRadius: 12, border: 'none',
-              background: 'linear-gradient(135deg, #2d2a26, #4a4540)',
-              color: '#fff', fontSize: 16, cursor: 'pointer',
-              boxShadow: '0 3px 14px rgba(45,42,38,0.4)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-            title="Panel de administración"
-          >
-            🛠️
-          </button>
-        )}
-
-        {/* Notifications FAB */}
-        <button
-          className="fab"
-          onClick={() => { if (!user) { setShowAuth(true); return; } setShowNotifications(true); }}
-          style={{
-            width: 42, height: 42, borderRadius: 12, border: 'none',
-            background: 'linear-gradient(135deg, #D8BCAD, #A96B49)',
-            color: '#fff', fontSize: 18, cursor: 'pointer',
-            boxShadow: '0 3px 14px rgba(169,107,73,0.35)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            position: 'relative',
-          }}
-          title="Mis notificaciones"
-        >
-          📬
-          {unreadNotifications > 0 && (
-            <span style={{
-              position: 'absolute', top: -4, right: -4,
-              width: 18, height: 18, borderRadius: 9,
-              background: '#BB4036', color: '#fff',
-              fontSize: 10, fontWeight: 700,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>{unreadNotifications > 9 ? '9+' : unreadNotifications}</span>
-          )}
-        </button>
-
-        {/* Chat FAB */}
-        <button
-          className="fab"
-          onClick={openInbox}
-          style={{
-            width: 42, height: 42, borderRadius: 12, border: "none",
-            background: "linear-gradient(135deg, #467098, #385A7A)",
-            color: "#fff", fontSize: 18, cursor: "pointer",
-            boxShadow: "0 3px 14px rgba(70,112,152,0.35)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            position: "relative",
-          }}
-          title="Plaza Ococa · Chat"
-        >
-          💬
-          {unreadChat > 0 && (
-            <span style={{
-              position: "absolute", top: -4, right: -4,
-              width: 18, height: 18, borderRadius: 9,
-              background: "#BB4036", color: "#fff",
-              fontSize: 10, fontWeight: 700,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>{unreadChat > 9 ? "9+" : unreadChat}</span>
-          )}
-        </button>
-
-        <button
-          className="fab"
-          onClick={handleAlerts}
-          style={{
-            width: 42,
-            height: 42,
-            borderRadius: 12,
-            border: "none",
-            background: "linear-gradient(135deg, #BB4036, #8F2F27)",
-            color: "#fff",
-            fontSize: 16,
-            cursor: "pointer",
-            boxShadow: "0 3px 14px rgba(187,64,54,0.35)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
-          }}
-          title="Mis alertas"
-        >
-          🔔
-          {savedAlerts.length > 0 && (
-            <span style={{
-              position: "absolute", top: -4, right: -4,
-              width: 18, height: 18, borderRadius: 9,
-              background: "#2d2a26", color: "#fff",
-              fontSize: 10, fontWeight: 700,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>{savedAlerts.filter(a => a.activo).length}</span>
-          )}
-        </button>
-
+      {/* FAB: publicar artículo */}
+      <div style={{ position: 'fixed', bottom: 24, right: 'max(20px, calc(50vw - 300px))', zIndex: 50 }}>
         <button
           className="fab"
           onClick={handlePublish}
+          aria-label="Publicar artículo"
+          title="Publicar artículo"
           style={{
             width: 56,
             height: 56,

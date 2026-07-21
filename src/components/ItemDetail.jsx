@@ -100,7 +100,7 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
       >
         {/* Close */}
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 4 }}>
-          <button onClick={onClose}
+          <button onClick={onClose} aria-label="Cerrar"
             style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999", padding: 4 }}>✕</button>
         </div>
 
@@ -206,12 +206,12 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
                 <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
                   <StarRating value={sellerAvg} size={12} />
                   <span style={{ fontSize: 11, fontWeight: 700, color: "#2d2a26" }}>{sellerAvg.toFixed(1)}</span>
-                  <span style={{ fontSize: 11, color: "#aaa" }}>· {sellerReviewCount} {sellerReviewCount === 1 ? "reseña" : "reseñas"}</span>
+                  <span style={{ fontSize: 11, color: "#7a756f" }}>· {sellerReviewCount} {sellerReviewCount === 1 ? "reseña" : "reseñas"}</span>
                 </div>
               ) : (
                 <div style={{ fontSize: 11, color: "#bbb", marginTop: 2 }}>Sin reseñas aún</div>
               )}
-              <div style={{ fontSize: 11, color: "#aaa", marginTop: 1 }}>
+              <div style={{ fontSize: 11, color: "#7a756f", marginTop: 1 }}>
                 {formatDate(item.creadoEn || item.fecha)}
               </div>
             </div>

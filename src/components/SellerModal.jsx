@@ -121,7 +121,7 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
         }}
       >
         {/* Close */}
-        <button onClick={onClose} style={{
+        <button onClick={onClose} aria-label="Cerrar" style={{
           position: "absolute", top: 16, right: 16,
           background: "none", border: "none", fontSize: 20,
           cursor: "pointer", color: "#999", padding: 4,
@@ -367,7 +367,7 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
                     </p>
                   )}
                   {r.itemTitulo && (
-                    <div style={{ fontSize: 10, color: "#aaa", marginTop: 6 }}>
+                    <div style={{ fontSize: 11, color: "#7a756f", marginTop: 6 }}>
                       Sobre: {r.itemTitulo}
                     </div>
                   )}

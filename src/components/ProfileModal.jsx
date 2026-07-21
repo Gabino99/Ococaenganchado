@@ -113,6 +113,7 @@ export default function ProfileModal({ open, onClose, user, profile, onLogout, i
         {/* Close */}
         <button
           onClick={onClose}
+          aria-label="Cerrar"
           style={{
             position: "absolute", top: 16, right: 16,
             background: "none", border: "none", fontSize: 20,

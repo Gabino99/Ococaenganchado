@@ -146,7 +146,7 @@ export default function NewItemModal({ open, onClose, user, profile }) {
           <h2 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 20, color: "#2d2a26" }}>
             Publicar artículo
           </h2>
-          <button onClick={resetAndClose}
+          <button onClick={resetAndClose} aria-label="Cerrar"
             style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999", padding: 4 }}>✕</button>
         </div>
 
@@ -182,6 +182,7 @@ export default function NewItemModal({ open, onClose, user, profile }) {
                 />
                 <button
                   onClick={() => removePhoto(i)}
+                  aria-label="Quitar foto"
                   style={{
                     position: "absolute", top: 3, right: 3,
                     width: 20, height: 20, borderRadius: 10,

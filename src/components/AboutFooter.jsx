@@ -25,6 +25,7 @@ function Section({ icon, title, children }) {
 export default function AboutFooter() {
   return (
     <footer style={{ background: '#fffdf9', borderTop: '1px solid #e0dbd4', padding: '28px 18px 40px', position: 'relative', zIndex: 1 }}>
+      <div style={{ maxWidth: 560, margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
         <span style={{ fontSize: 26 }}>🌿</span>
         <div>
@@ -153,6 +154,7 @@ export default function AboutFooter() {
           a <strong>{CONTACTO.correo}</strong>.
         </p>
       </Section>
+      </div>
     </footer>
   );
 }

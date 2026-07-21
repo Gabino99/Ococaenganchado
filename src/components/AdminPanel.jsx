@@ -84,6 +84,7 @@ export default function AdminPanel({ open, onClose }) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Cerrar"
             style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#999', padding: 4 }}
           >✕</button>
         </div>

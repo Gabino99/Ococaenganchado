@@ -158,7 +158,7 @@ export default function ChatModal({ chatId, chatData, onClose, onBack, user, pro
               {chatData?.itemTitulo}
             </div>
           </div>
-          <button onClick={onClose} style={{
+          <button onClick={onClose} aria-label="Cerrar" style={{
             background: "none", border: "none", fontSize: 20,
             cursor: "pointer", color: "#999", padding: 4, flexShrink: 0,
           }}>✕</button>
