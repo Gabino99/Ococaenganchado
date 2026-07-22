@@ -4,6 +4,7 @@ import {
   deleteItem,
   adminClearFlags,
   getAdminStats,
+  adminStripLegacyContactInfo,
 } from '../services/firestore';
 import { CATEGORIES, formatColones } from '../data';
 
@@ -12,6 +13,7 @@ export default function AdminPanel({ open, onClose }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
+  const [cleanupState, setCleanupState] = useState(null); // null | 'running' | { done: n } | { error: true }
 
   useEffect(() => {
     if (!open) return;
@@ -53,6 +55,21 @@ export default function AdminPanel({ open, onClose }) {
   };
 
   const getCatInfo = (id) => CATEGORIES.find((c) => c.id === id);
+
+  const handleCleanup = async () => {
+    if (!window.confirm(
+      'Esto quita los teléfonos y correos guardados dentro de los artículos viejos. ' +
+      'El contacto seguirá funcionando (se lee del perfil del vendedor). ¿Continuar?'
+    )) return;
+    setCleanupState('running');
+    try {
+      const count = await adminStripLegacyContactInfo();
+      setCleanupState({ done: count });
+    } catch (err) {
+      console.error('Error en limpieza de contactos:', err);
+      setCleanupState({ error: true });
+    }
+  };
 
   return (
     <div
@@ -132,6 +149,45 @@ export default function AdminPanel({ open, onClose }) {
             </div>
           </div>
         )}
+
+        {/* Mantenimiento */}
+        <div style={{
+          fontSize: 12, fontWeight: 700, color: '#8a847d',
+          textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10,
+        }}>
+          Mantenimiento
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          {cleanupState && typeof cleanupState === 'object' ? (
+            <div style={{
+              padding: '10px 14px', borderRadius: 12, fontSize: 13, fontWeight: 600,
+              background: cleanupState.error ? '#F8ECEB' : '#EEF3E9',
+              border: cleanupState.error ? '1px solid #BB403640' : '1px solid #78996340',
+              color: cleanupState.error ? '#BB4036' : '#5C7A4E',
+            }}>
+              {cleanupState.error
+                ? 'Hubo un error. Intentá de nuevo.'
+                : cleanupState.done === 0
+                  ? '✓ No quedan artículos con datos de contacto adentro.'
+                  : `✓ Listo: se limpiaron ${cleanupState.done} artículo(s).`}
+            </div>
+          ) : (
+            <button
+              onClick={handleCleanup}
+              disabled={cleanupState === 'running'}
+              style={{
+                width: '100%', padding: '10px 0', borderRadius: 12,
+                border: '1.5px solid #d5d0c8', background: '#fffdf9',
+                fontSize: 13, fontWeight: 700, color: '#6b6560',
+                cursor: cleanupState === 'running' ? 'wait' : 'pointer',
+              }}
+            >
+              {cleanupState === 'running'
+                ? 'Limpiando...'
+                : '🧹 Quitar contactos de artículos viejos'}
+            </button>
+          )}
+        </div>
 
         {/* Section title */}
         <div style={{

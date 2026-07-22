@@ -132,6 +132,12 @@ Para que Google verifique que la app y el sitio web son del mismo dueño:
 | Categoría | Compras |
 | Clasificación de contenido | Para todos |
 | País | Costa Rica |
+| **Política de privacidad** (obligatoria) | `https://ococaenganchado.com/privacidad.html` |
+
+> En la sección **"Seguridad de los datos"** de Play Console, declará que la app recolecta:
+> nombre, correo electrónico, número de teléfono (opcional), fotos y mensajes dentro de la app;
+> que los datos van cifrados en tránsito y que el usuario puede pedir su eliminación
+> (correo de contacto: desarrollococa@gmail.com). Todo eso está descrito en la política de privacidad.
 
 4. Subí screenshots (tomá capturas de la app en Chrome DevTools modo móvil)
 5. **Producción** → "Crear nueva versión" → Subí el archivo `.aab`
@@ -160,6 +166,7 @@ Google revisa la app en **1-7 días** (primera vez puede tardar más).
 - [ ] Manifest.json accesible
 - [ ] Service Worker registrado
 - [ ] Íconos en todos los tamaños
+- [x] Política de privacidad publicada (https://ococaenganchado.com/privacidad.html)
 - [ ] Cuenta Google Play Developer activa ($25)
 - [ ] AAB generado con Bubblewrap o PWABuilder
 - [ ] Digital Asset Links configurado

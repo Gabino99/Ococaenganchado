@@ -154,6 +154,13 @@ export default function AboutFooter() {
           a <strong>{CONTACTO.correo}</strong>.
         </p>
       </Section>
+
+      {/* Legal */}
+      <p style={{ margin: 0, fontSize: 12, color: '#8a847d', textAlign: 'center' }}>
+        <a href="/privacidad.html" style={{ color: '#8a847d', fontWeight: 600 }}>
+          Política de privacidad
+        </a>
+      </p>
       </div>
     </footer>
   );

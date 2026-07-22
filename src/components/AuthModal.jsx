@@ -258,6 +258,20 @@ export default function AuthModal({ open, initialMode = "login", onClose, onRegi
               : "Crear mi cuenta ♻️"
             }
           </button>
+
+          {mode === "register" && (
+            <p style={{ margin: "10px 0 0", fontSize: 11.5, color: "#8a847d", textAlign: "center", lineHeight: 1.4 }}>
+              Al crear tu cuenta aceptás nuestra{" "}
+              <a
+                href="/privacidad.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#3B5FA1", fontWeight: 600 }}
+              >
+                Política de privacidad
+              </a>
+            </p>
+          )}
         </form>
 
         {/* Switch mode */}

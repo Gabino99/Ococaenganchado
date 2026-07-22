@@ -16,6 +16,7 @@ import {
   startAfter,
   increment,
   getCountFromServer,
+  deleteField,
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
@@ -213,6 +214,27 @@ export function subscribeAdminFlaggedItems(callback) {
 
 export async function adminClearFlags(itemId) {
   await updateDoc(doc(db, 'items', itemId), { flagCount: 0 });
+}
+
+// Migración una-sola-vez: los artículos publicados antes de jul-2026 guardaban
+// teléfono/correo del autor dentro del doc. Los quita para que el contacto se
+// resuelva siempre desde users/{autorId} (y poder abrir el catálogo al público
+// en el futuro sin exponer datos personales). Solo admins pasan las reglas.
+export async function adminStripLegacyContactInfo() {
+  const snap = await getDocs(collection(db, 'items'));
+  const targets = snap.docs.filter((d) => {
+    const data = d.data();
+    return 'autorTelefono' in data || 'autorEmail' in data;
+  });
+  await Promise.all(
+    targets.map((d) =>
+      updateDoc(d.ref, {
+        autorTelefono: deleteField(),
+        autorEmail: deleteField(),
+      })
+    )
+  );
+  return targets.length;
 }
 
 export async function getAdminStats() {
