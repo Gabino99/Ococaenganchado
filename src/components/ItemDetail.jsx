@@ -208,12 +208,16 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{
               width: 36, height: 36, borderRadius: 10,
-              background: "linear-gradient(135deg, #3B5FA1, #789963)",
+              background: sellerInfo?.fotoURL ? "#e0dbd4" : "linear-gradient(135deg, #3B5FA1, #789963)",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "#fff", fontSize: 15, fontWeight: 800, fontFamily: "'Fraunces', serif",
-              flexShrink: 0,
+              flexShrink: 0, overflow: "hidden",
             }}>
-              {(item.autorNombre || item.autor || "?").charAt(0).toUpperCase()}
+              {sellerInfo?.fotoURL ? (
+                <img src={sellerInfo.fotoURL} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                (item.autorNombre || item.autor || "?").charAt(0).toUpperCase()
+              )}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: "#2d2a26", lineHeight: 1.2 }}>
