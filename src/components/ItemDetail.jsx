@@ -57,13 +57,14 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
     if (fecha.toDate) {
       const d = fecha.toDate();
       const now = new Date();
-      const diff = now - d;
-      const mins = Math.floor(diff / 60000);
+      const mins = Math.floor((now - d) / 60000);
       if (mins < 60) return `Hace ${mins} min`;
-      const hrs = Math.floor(mins / 60);
-      if (hrs < 24) return `Hace ${hrs}h`;
-      const days = Math.floor(hrs / 24);
-      if (days < 7) return `Hace ${days} día${days > 1 ? "s" : ""}`;
+      // Días de calendario transcurridos, no bloques de 24h (ver data.js formatFecha)
+      const startOfDay = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate());
+      const days = Math.round((startOfDay(now) - startOfDay(d)) / 86400000);
+      if (days <= 0) return `Hace ${Math.floor(mins / 60)}h`;
+      if (days === 1) return "Ayer";
+      if (days < 7) return `Hace ${days} días`;
       return d.toLocaleDateString("es-CR");
     }
     return "Reciente";
