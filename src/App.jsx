@@ -640,9 +640,26 @@ export default function App() {
             {sortedItems.map((item, i) => {
               const cat = CATEGORIES.find((c) => c.id === item.categoria);
               const isSold = item.status === "vendido";
+              const prevSold = i > 0 && sortedItems[i - 1].status === "vendido";
+              const showSoldDivider = isSold && !prevSold;
               return (
+                <Fragment key={item.id}>
+                {showSoldDivider && (
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    margin: "8px 0 2px",
+                  }}>
+                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.1)" }} />
+                    <span style={{
+                      fontSize: 11, fontWeight: 700, color: "#a39d95",
+                      textTransform: "uppercase", letterSpacing: 0.5,
+                    }}>
+                      Vendidos
+                    </span>
+                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.1)" }} />
+                  </div>
+                )}
                 <div
-                  key={item.id}
                   className="item-card"
                   onClick={() => setSelectedItem(item)}
                   style={{
@@ -709,6 +726,7 @@ export default function App() {
                     </div>
                   </div>
                 </div>
+                </Fragment>
               );
             })}
           </div>
