@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const inputStyle = {
   width: "100%",
@@ -24,8 +24,8 @@ const labelStyle = {
   textTransform: "uppercase",
 };
 
-export default function AuthModal({ open, onClose, onRegister, onLogin, onResetPassword }) {
-  const [mode, setMode] = useState("login"); // login | register | reset
+export default function AuthModal({ open, initialMode = "login", onClose, onRegister, onLogin, onResetPassword }) {
+  const [mode, setMode] = useState(initialMode); // login | register | reset
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nombre, setNombre] = useState("");
@@ -34,6 +34,10 @@ export default function AuthModal({ open, onClose, onRegister, onLogin, onResetP
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+
+  useEffect(() => {
+    if (open) setMode(initialMode);
+  }, [open, initialMode]);
 
   if (!open) return null;
 

@@ -29,7 +29,7 @@ export default function App() {
   const [showNewItem, setShowNewItem] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
   const [showPeones, setShowPeones] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
+  const [showAuth, setShowAuth] = useState(false); // false | true (abre en login) | "register"
   const [showProfile, setShowProfile] = useState(false);
   const [showInbox, setShowInbox] = useState(false);
   const [sellerData, setSellerData] = useState(null); // { sellerId, sellerName, contextItem }
@@ -353,7 +353,7 @@ export default function App() {
           </p>
 
           <button
-            onClick={() => setShowAuth(true)}
+            onClick={() => setShowAuth("register")}
             style={{
               padding: "15px 0", borderRadius: 14, border: "none",
               background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
@@ -411,7 +411,8 @@ export default function App() {
         <AboutFooter />
 
         <AuthModal
-          open={showAuth}
+          open={!!showAuth}
+          initialMode={showAuth === "register" ? "register" : "login"}
           onClose={() => setShowAuth(false)}
           onRegister={register}
           onLogin={login}
@@ -858,7 +859,8 @@ export default function App() {
 
       {/* Modals */}
       <AuthModal
-        open={showAuth}
+        open={!!showAuth}
+        initialMode={showAuth === "register" ? "register" : "login"}
         onClose={() => setShowAuth(false)}
         onRegister={register}
         onLogin={login}
