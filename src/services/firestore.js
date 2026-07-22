@@ -15,6 +15,7 @@ import {
   limit,
   startAfter,
   increment,
+  getCountFromServer,
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
@@ -216,12 +217,12 @@ export async function adminClearFlags(itemId) {
 
 export async function getAdminStats() {
   const [itemsSnap, usersSnap] = await Promise.all([
-    getDocs(collection(db, 'items')),
-    getDocs(collection(db, 'users')),
+    getCountFromServer(collection(db, 'items')),
+    getCountFromServer(collection(db, 'users')),
   ]);
   return {
-    totalItems: itemsSnap.size,
-    totalUsers: usersSnap.size,
+    totalItems: itemsSnap.data().count,
+    totalUsers: usersSnap.data().count,
   };
 }
 

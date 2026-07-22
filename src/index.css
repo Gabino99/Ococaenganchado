@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;0,9..144,800;1,9..144,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+/* Las fuentes se cargan desde index.html con preconnect (evita el @import
+   render-blocking en cascada: CSS → CSS de Google → woff2) */
 
 *,
 *::before,

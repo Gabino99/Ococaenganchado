@@ -3,11 +3,12 @@ import { CATEGORIES, formatColones } from '../data';
 import ItemImage from './ItemImage';
 import Badge from './Badge';
 import StarRating, { calcRating } from './StarRating';
-import { subscribeSellerReviews, flagItem } from '../services/firestore';
+import { subscribeSellerReviews, flagItem, getSellerProfile } from '../services/firestore';
 
 export default function ItemDetail({ item, onClose, currentUserId, onStartChat, onViewSeller }) {
   const [activePhoto, setActivePhoto] = useState(0);
   const [sellerReviews, setSellerReviews] = useState([]);
+  const [sellerInfo, setSellerInfo] = useState(null);
   const [showFlagMenu, setShowFlagMenu] = useState(false);
   const [flagging, setFlagging] = useState(false);
   const [flagDone, setFlagDone] = useState(false);
@@ -17,6 +18,18 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
     const unsub = subscribeSellerReviews(item.autorId, setSellerReviews);
     return unsub;
   }, [item?.autorId]);
+
+  // Datos de contacto del vendedor: se leen del perfil al abrir el detalle
+  // (los artículos ya no guardan teléfono/correo; los viejos sirven de fallback)
+  useEffect(() => {
+    setSellerInfo(null);
+    if (!item?.autorId || !currentUserId) return;
+    let cancelled = false;
+    getSellerProfile(item.autorId)
+      .then((p) => { if (!cancelled) setSellerInfo(p); })
+      .catch((err) => console.error('Error loading seller contact:', err));
+    return () => { cancelled = true; };
+  }, [item?.autorId, currentUserId]);
 
   if (!item) return null;
 
@@ -56,8 +69,11 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
     return "Reciente";
   };
 
+  const contactPhone = sellerInfo?.telefono || item.autorTelefono || "";
+  const contactEmail = sellerInfo?.email || item.autorEmail || "";
+
   const handleWhatsApp = () => {
-    const phone = (item.autorTelefono || "").replace(/[^0-9]/g, "");
+    const phone = contactPhone.replace(/[^0-9]/g, "");
     if (!phone) {
       alert("Este vendedor no dejó número de WhatsApp. Podés contactarlo por otros medios.");
       return;
@@ -70,12 +86,12 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
   };
 
   const handleEmail = () => {
-    if (!item.autorEmail) return;
+    if (!contactEmail) return;
     const subject = encodeURIComponent(`Sobre "${item.titulo}" en Ococa Enganchado`);
     const body = encodeURIComponent(
       `¡Hola! Vi tu artículo "${item.titulo}" en Ococa Enganchado y me interesa. ¿Está disponible?`
     );
-    window.open(`mailto:${item.autorEmail}?subject=${subject}&body=${body}`);
+    window.open(`mailto:${contactEmail}?subject=${subject}&body=${body}`);
   };
 
   return (
@@ -339,7 +355,7 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
               >
                 WhatsApp
               </button>
-              {item.autorEmail && (
+              {contactEmail && (
                 <button
                   onClick={handleEmail}
                   style={{

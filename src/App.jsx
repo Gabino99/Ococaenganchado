@@ -50,15 +50,23 @@ export default function App() {
     setTimeout(() => setLoaded(true), 100);
   }, []);
 
-  // Subscribe to Firestore items in real time (primera página)
+  // Subscribe to Firestore items in real time (primera página).
+  // Depende de `user`: las reglas exigen sesión para leer items, y un listener
+  // iniciado sin login queda muerto tras un permission-denied.
   useEffect(() => {
+    if (!user) {
+      setFirebaseItems(null);
+      setLastItemDoc(null);
+      setHasMoreItems(false);
+      return;
+    }
     const unsub = subscribeItems(({ items: firestoreItems, lastDoc }) => {
       setFirebaseItems(firestoreItems);
       setLastItemDoc(lastDoc);
       setHasMoreItems(firestoreItems.length === 20);
     });
     return unsub;
-  }, []);
+  }, [user]);
 
   // Use Firestore items if available, otherwise show sample items
   useEffect(() => {
@@ -246,15 +254,20 @@ export default function App() {
     if (!user) { setShowAuth(true); return; }
     setSelectedItem(null);
     const myName = profile?.nombre || user.displayName || "Anónimo";
-    const chatId = await getOrCreateChat(user.uid, myName, item.autorId, item.autorNombre, item);
-    localStorage.setItem(`cr_${chatId}`, String(Date.now()));
-    setActiveChatData({
-      itemTitulo: item.titulo,
-      itemFoto: item.fotos?.[0] || null,
-      otherName: item.autorNombre || "Vendedor",
-      otherId: item.autorId,
-    });
-    setActiveChatId(chatId);
+    try {
+      const chatId = await getOrCreateChat(user.uid, myName, item.autorId, item.autorNombre, item);
+      localStorage.setItem(`cr_${chatId}`, String(Date.now()));
+      setActiveChatData({
+        itemTitulo: item.titulo,
+        itemFoto: item.fotos?.[0] || null,
+        otherName: item.autorNombre || "Vendedor",
+        otherId: item.autorId,
+      });
+      setActiveChatId(chatId);
+    } catch (err) {
+      console.error('Error opening chat:', err);
+      alert('No se pudo abrir el chat. Intentá de nuevo.');
+    }
   };
 
   const handleViewSeller = (item) => {

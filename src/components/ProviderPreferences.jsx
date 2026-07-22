@@ -147,7 +147,7 @@ export default function ProviderPreferences({ open, onClose, userId, savedAlerts
         </div>
 
         <p style={{ fontSize: 13, color: "#8a847d", margin: "0 0 16px", lineHeight: 1.4 }}>
-          Decile a la IA qué estás buscando. Cuando alguien publique algo que coincida, te notificamos al toque.
+          Contanos qué estás buscando. Cuando alguien publique algo que coincida, te notificamos al toque.
         </p>
 
         {/* Existing alerts */}
@@ -338,7 +338,7 @@ export default function ProviderPreferences({ open, onClose, userId, savedAlerts
             <span style={{ fontWeight: 700 }}>1.</span> Vos describís lo que buscás
           </div>
           <div style={{ marginBottom: 4 }}>
-            <span style={{ fontWeight: 700 }}>2.</span> Cuando alguien publica algo nuevo, Gemma 4 analiza si coincide con tus alertas
+            <span style={{ fontWeight: 700 }}>2.</span> Cuando alguien publica algo nuevo, el sistema compara el texto, la categoría y el tipo con tus alertas
           </div>
           <div>
             <span style={{ fontWeight: 700 }}>3.</span> Si hay match, te mandamos notificación al toque 🔔

@@ -68,6 +68,12 @@ export default function NewItemModal({ open, onClose, user, profile }) {
       return;
     }
 
+    const precioNum = tipo === "venta" && precio ? parseInt(precio, 10) : null;
+    if (precioNum !== null && (!Number.isFinite(precioNum) || precioNum < 0)) {
+      setError("El precio no es válido");
+      return;
+    }
+
     setSaving(true);
     setError(null);
 
@@ -86,13 +92,14 @@ export default function NewItemModal({ open, onClose, user, profile }) {
         descripcion: descripcion.trim(),
         categoria,
         tipo,
-        precio: tipo === "venta" && precio ? parseInt(precio, 10) : null,
+        precio: precioNum,
         imagen: Math.floor(Math.random() * 8),
         fotos,
         autorId: user.uid,
         autorNombre: profile?.nombre || user.displayName || "Anónimo",
-        autorTelefono: profile?.telefono || "",
-        autorEmail: user.email || "",
+        // El teléfono y correo de contacto NO se guardan en el artículo:
+        // se resuelven desde users/{autorId} al momento de contactar (requiere
+        // sesión), para no duplicar datos personales en documentos públicos
         fecha: "Justo ahora",
       };
 
