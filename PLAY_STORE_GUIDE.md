@@ -10,18 +10,13 @@ Tiempo estimado: ~2-3 horas (sin contar la revisión de Google, que tarda 1-7 d�
 
 ---
 
-## PASO 1: Desplegar la PWA en un dominio con HTTPS
+## PASO 1: Desplegar la PWA en un dominio con HTTPS ✅ (ya está)
 
 TWA **requiere** que la PWA esté en un dominio real con HTTPS.
-La opción más fácil y gratuita es **Vercel**:
+Esto ya está resuelto: la app está desplegada en **https://ococaenganchado.com**
+(GitHub Pages, con despliegue automático en cada push a `main`).
 
-1. Subí el proyecto a GitHub (ya lo tenés listo)
-2. Andá a [vercel.com](https://vercel.com) → "Import Project" → seleccioná el repo
-3. Framework preset: **Vite** → Deploy
-4. Vercel te da una URL tipo `ococa-enganchado.vercel.app` con HTTPS incluido
-5. (Opcional) Conectá un dominio personalizado si tenés uno
-
-**Verificá que la PWA funcione:** abrí la URL en Chrome Android y confirmá que aparece el botón "Instalar" o "Agregar a pantalla de inicio".
+**Verificá que la PWA funcione:** abrí https://ococaenganchado.com en Chrome Android y confirmá que aparece el botón "Instalar" o "Agregar a pantalla de inicio".
 
 ---
 
@@ -42,8 +37,7 @@ En tu computadora necesitás:
 # https://nodejs.org
 
 # Instalar Bubblewrap (empaqueta la PWA como app Android)
-npm install -g @anthropic-anthropic/anthropic@anthropic
-npm install -g @nicolo-ribaudo/bubblewrap
+npm install -g @bubblewrap/cli
 
 # Instalar Java JDK 17+ (requerido por Android SDK)
 # https://adoptium.net/
@@ -61,8 +55,8 @@ npm install -g @nicolo-ribaudo/bubblewrap
 # Crear carpeta para el proyecto Android
 mkdir ococa-twa && cd ococa-twa
 
-# Inicializar el TWA (reemplazá la URL con tu dominio real)
-bubblewrap init --manifest="https://TU-DOMINIO.vercel.app/manifest.json"
+# Inicializar el TWA
+bubblewrap init --manifest="https://ococaenganchado.com/manifest.json"
 ```
 
 Bubblewrap te va a pedir:
@@ -72,8 +66,8 @@ Bubblewrap te va a pedir:
 | App name | Ococa Enganchado |
 | Short name | Enganchado |
 | Package ID | `cr.ococa.enganchado` |
-| Starting URL | `https://TU-DOMINIO.vercel.app/` |
-| Theme color | `#3D8B7A` |
+| Starting URL | `https://ococaenganchado.com/` |
+| Theme color | `#3B5FA1` |
 | Background color | `#f5f2ed` |
 | Signing key | Crear nueva (¡GUARDÁ EL KEYSTORE Y LA CONTRASEÑA!) |
 
@@ -89,7 +83,7 @@ Esto genera `app-release-bundle.aab` — el archivo que subís a Google Play.
 ## PASO 4B: Generar con PWABuilder (opción sin instalar nada)
 
 1. Andá a [pwabuilder.com](https://www.pwabuilder.com)
-2. Ingresá la URL de tu PWA desplegada
+2. Ingresá la URL de la PWA: `https://ococaenganchado.com`
 3. Click en "Package for stores" → "Android"
 4. Seleccioná "Google Play" → configurá el Package ID como `cr.ococa.enganchado`
 5. Descargá el ZIP con el AAB listo
@@ -118,8 +112,8 @@ Para que Google verifique que la app y el sitio web son del mismo dueño:
 ]
 ```
 
-3. Hacé redeploy del sitio web con este archivo
-4. Verificá en: `https://TU-DOMINIO.vercel.app/.well-known/assetlinks.json`
+3. Hacé commit y push — GitHub Pages redespliega solo
+4. Verificá en: `https://ococaenganchado.com/.well-known/assetlinks.json`
 
 **Esto es crítico** — sin esto, la app abre Chrome en vez de mostrarse como app nativa.
 
@@ -156,7 +150,7 @@ Google revisa la app en **1-7 días** (primera vez puede tardar más).
 - **El keystore es IRREEMPLAZABLE** — si lo perdés, no podés actualizar la app nunca más. Guardalo en un lugar seguro con la contraseña.
 - **Digital Asset Links** debe estar correctamente configurado antes de subir la app, sino aparece la barra de Chrome arriba.
 - **Actualizaciones** son instantáneas: como es una TWA, solo actualizás el sitio web y la app se actualiza sola. No necesitás subir nuevo AAB a menos que cambies algo del manifiesto.
-- **Costo total**: $25 USD (cuenta de developer) + hosting gratuito en Vercel = **$25 USD total**.
+- **Costo total**: $25 USD (cuenta de developer) + hosting gratuito en GitHub Pages = **$25 USD total**.
 
 ---
 
