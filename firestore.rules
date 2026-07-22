@@ -22,12 +22,13 @@ service cloud.firestore {
         && request.resource.data.get('isAdmin', false) == resource.data.get('isAdmin', false);
     }
 
-    // Artículos: lectura para autenticados (los items históricos guardan
-    // teléfono/correo del autor; no exponerlos sin sesión).
+    // Artículos: lectura pública — el catálogo se puede explorar sin cuenta.
+    // Los items ya no guardan teléfono/correo del autor (migrados 2026-07-22);
+    // el contacto se resuelve desde users/, que sí exige sesión.
     // Update permitido a: el autor (sin reasignar autorId), cualquier usuario
     // que SOLO incremente flagCount en 1 (botón "Reportar"), o un admin.
     match /items/{itemId} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow create: if request.auth != null
         && request.resource.data.autorId == request.auth.uid
         && request.resource.data.titulo is string
@@ -96,11 +97,11 @@ service cloud.firestore {
       allow read, delete: if isAdmin();
     }
 
-    // Reseñas de vendedores: lectura para usuarios autenticados; cada comprador
-    // escribe una sola reseña por vendedor (id = buyerId_sellerId), sin
-    // auto-reseñas y con rating válido de 1 a 5
+    // Reseñas de vendedores: lectura pública (acompañan al catálogo abierto);
+    // cada comprador escribe una sola reseña por vendedor (id = buyerId_sellerId),
+    // sin auto-reseñas y con rating válido de 1 a 5
     match /reviews/{reviewId} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow create, update: if request.auth != null
         && request.resource.data.buyerId == request.auth.uid
         && request.resource.data.sellerId != request.auth.uid

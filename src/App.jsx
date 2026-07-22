@@ -51,15 +51,9 @@ export default function App() {
   }, []);
 
   // Subscribe to Firestore items in real time (primera página).
-  // Depende de `user`: las reglas exigen sesión para leer items, y un listener
-  // iniciado sin login queda muerto tras un permission-denied.
+  // El catálogo es de lectura pública; se re-suscribe al cambiar la sesión
+  // para que un listener muerto por permisos no deje el feed congelado.
   useEffect(() => {
-    if (!user) {
-      setFirebaseItems(null);
-      setLastItemDoc(null);
-      setHasMoreItems(false);
-      return;
-    }
     const unsub = subscribeItems(({ items: firestoreItems, lastDoc }) => {
       setFirebaseItems(firestoreItems);
       setLastItemDoc(lastDoc);
@@ -299,138 +293,6 @@ export default function App() {
           <div style={{ fontSize: 52, marginBottom: 14 }}>♻️</div>
           <div style={{ fontFamily: "'Fraunces', serif", fontSize: 18, color: "#3B5FA1", fontWeight: 700 }}>Cargando...</div>
         </div>
-      </div>
-    );
-  }
-
-  // ── Landing page for non-authenticated users ─────────────────────────────
-  if (!user) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#f5f2ed", position: "relative", overflow: "hidden" }}>
-        <style>{`
-          @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-          @keyframes slideUp { from { transform: translateY(30px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
-        `}</style>
-
-        {/* Background texture */}
-        <div style={{
-          position: "fixed", inset: 0,
-          backgroundImage: `radial-gradient(circle at 20% 30%, rgba(120,153,99,0.08) 0%, transparent 50%),
-                           radial-gradient(circle at 80% 70%, rgba(59,95,161,0.08) 0%, transparent 50%)`,
-          pointerEvents: "none",
-        }} />
-
-        {/* Header */}
-        <header style={{ padding: "18px 20px" }}>
-          <div style={{ maxWidth: 560, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <BrandIcon size={40} radius={10} />
-            <div>
-              <h1 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 800, color: "#2d2a26", lineHeight: 1.1 }}>
-                Ococa Enganchado
-              </h1>
-              <p style={{ margin: 0, fontSize: 10, color: "#8a847d", letterSpacing: "0.5px", fontWeight: 600 }}>
-                ECONOMÍA CIRCULAR · OCOCA
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowAuth(true)}
-            style={{
-              padding: "7px 16px", borderRadius: 10, border: "none",
-              background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
-              color: "#fff", fontSize: 13, fontWeight: 700,
-              cursor: "pointer", fontFamily: "'Fraunces', serif",
-              boxShadow: "0 2px 8px rgba(59,95,161,0.25)",
-            }}
-          >
-            Entrar ♻️
-          </button>
-          </div>
-        </header>
-
-        {/* Hero */}
-        <div style={{ padding: "36px 24px 28px", textAlign: "center", animation: "slideUp 0.5s ease" }}>
-          <div style={{ fontSize: 64, marginBottom: 16 }}>🌿</div>
-          <h2 style={{
-            margin: "0 0 14px", fontFamily: "'Fraunces', serif",
-            fontSize: 30, fontWeight: 900, color: "#2d2a26", lineHeight: 1.2,
-          }}>
-            El mercado circular<br />de Ococa
-          </h2>
-          <p style={{
-            margin: "0 auto 32px", fontSize: 15, color: "#6b6560",
-            lineHeight: 1.65, maxWidth: 310,
-          }}>
-            Comprá, vendé, trocá y doná artículos con tu comunidad. Unite y ayudá a que menos cosas terminen en la basura.
-          </p>
-
-          <button
-            onClick={() => setShowAuth("register")}
-            style={{
-              padding: "15px 0", borderRadius: 14, border: "none",
-              background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
-              color: "#fff", fontSize: 17, fontWeight: 800,
-              cursor: "pointer", fontFamily: "'Fraunces', serif",
-              boxShadow: "0 6px 24px rgba(59,95,161,0.4)",
-              display: "block", width: "100%", maxWidth: 320, margin: "0 auto 14px",
-            }}
-          >
-            Crear cuenta gratis 🌱
-          </button>
-          <button
-            onClick={() => setShowAuth(true)}
-            style={{
-              background: "none", border: "none",
-              fontSize: 13, color: "#8a847d",
-              cursor: "pointer", textDecoration: "underline",
-            }}
-          >
-            Ya tengo cuenta → Iniciar sesión
-          </button>
-        </div>
-
-        {/* Feature cards */}
-        <div style={{ padding: "0 20px 60px", display: "flex", flexDirection: "column", gap: 12, maxWidth: 560, margin: "0 auto" }}>
-          {[
-            { icon: "🏷️", color: "#3B5FA1", title: "Vendé lo que no usás", desc: "Poné precio y coordiná con compradores de tu comunidad." },
-            { icon: "🔄", color: "#789963", title: "Trocá sin plata", desc: "Intercambiá artículos directamente, sin necesidad de dinero." },
-            { icon: "🎁", color: "#BB4036", title: "Donaciones vecinas", desc: "Dale una segunda vida a lo que ya no necesitás, gratuitamente." },
-          ].map((f) => (
-            <div key={f.title} style={{
-              padding: "16px 18px", borderRadius: 16,
-              background: "#fffdf9", border: "1.5px solid #e0dbd4",
-              display: "flex", alignItems: "center", gap: 14,
-              boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-            }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                background: f.color + "20",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 22,
-              }}>{f.icon}</div>
-              <div>
-                <div style={{ fontFamily: "'Fraunces', serif", fontSize: 15, fontWeight: 700, color: "#2d2a26", marginBottom: 2 }}>
-                  {f.title}
-                </div>
-                <div style={{ fontSize: 13, color: "#7a756f", lineHeight: 1.4 }}>
-                  {f.desc}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <AboutFooter />
-
-        <AuthModal
-          open={!!showAuth}
-          initialMode={showAuth === "register" ? "register" : "login"}
-          onClose={() => setShowAuth(false)}
-          onRegister={register}
-          onLogin={login}
-          onResetPassword={resetPassword}
-        />
       </div>
     );
   }
@@ -725,6 +587,36 @@ export default function App() {
 
       {/* Items List */}
       <main style={{ padding: "12px 12px 100px", position: "relative", zIndex: 1, maxWidth: 560, margin: "0 auto" }}>
+        {/* Welcome banner: visitantes sin cuenta pueden mirar, no contactar */}
+        {!user && (
+          <div style={{
+            padding: "16px 18px", borderRadius: 16, marginBottom: 12,
+            background: "#fffdf9", border: "1.5px solid #e0dbd4",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+            textAlign: "center", animation: "slideUp 0.4s ease",
+          }}>
+            <div style={{ fontSize: 30, marginBottom: 6 }}>🌿</div>
+            <div style={{ fontFamily: "'Fraunces', serif", fontSize: 17, fontWeight: 800, color: "#2d2a26", marginBottom: 4 }}>
+              El mercado circular de Ococa
+            </div>
+            <p style={{ margin: "0 0 12px", fontSize: 13, color: "#6b6560", lineHeight: 1.5 }}>
+              Mirá lo que los vecinos venden, trocan y donan. Para publicar o contactar, creá tu cuenta gratis.
+            </p>
+            <button
+              onClick={() => setShowAuth("register")}
+              style={{
+                padding: "10px 24px", borderRadius: 12, border: "none",
+                background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
+                color: "#fff", fontSize: 14, fontWeight: 800,
+                cursor: "pointer", fontFamily: "'Fraunces', serif",
+                boxShadow: "0 4px 16px rgba(59,95,161,0.3)",
+              }}
+            >
+              Crear cuenta gratis 🌱
+            </button>
+          </div>
+        )}
+
         {/* Show sample data banner */}
         {firebaseItems !== null && firebaseItems.length === 0 && (
           <div style={{
@@ -915,6 +807,7 @@ export default function App() {
         currentUserId={user?.uid}
         onStartChat={handleStartChat}
         onViewSeller={handleViewSeller}
+        onRequireAuth={() => { setSelectedItem(null); setShowAuth("register"); }}
       />
       <ProviderPreferences open={showAlerts} onClose={() => setShowAlerts(false)} userId={user?.uid} savedAlerts={savedAlerts} />
       <PeonesModal open={showPeones} onClose={() => setShowPeones(false)} user={user} profile={profile} />

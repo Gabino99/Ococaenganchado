@@ -44,8 +44,11 @@ export default function SellerModal({ open, onClose, sellerId, sellerName, curre
     setLoading(true);
     setShowForm(false);
 
-    // Fetch seller profile
-    getSellerProfile(sellerId).then(p => setSellerProfile(p));
+    // Fetch seller profile (requiere sesión; visitantes sin cuenta solo ven
+    // el nombre y las reseñas públicas)
+    getSellerProfile(sellerId)
+      .then(p => setSellerProfile(p))
+      .catch(() => setSellerProfile(null));
 
     // Subscribe to reviews
     const unsub = subscribeSellerReviews(sellerId, (r) => {

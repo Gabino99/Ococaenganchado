@@ -5,7 +5,7 @@ import Badge from './Badge';
 import StarRating, { calcRating } from './StarRating';
 import { subscribeSellerReviews, flagItem, getSellerProfile } from '../services/firestore';
 
-export default function ItemDetail({ item, onClose, currentUserId, onStartChat, onViewSeller }) {
+export default function ItemDetail({ item, onClose, currentUserId, onStartChat, onViewSeller, onRequireAuth }) {
   const [activePhoto, setActivePhoto] = useState(0);
   const [sellerReviews, setSellerReviews] = useState([]);
   const [sellerInfo, setSellerInfo] = useState(null);
@@ -312,6 +312,20 @@ export default function ItemDetail({ item, onClose, currentUserId, onStartChat, 
             🎉 Este artículo ya fue vendido. <br />
             <span style={{ fontSize: 12, fontWeight: 400 }}>¡Seguí buscando más tesoros en Ococa!</span>
           </div>
+        ) : !currentUserId ? (
+          // Visitante sin cuenta: puede mirar, contactar requiere registrarse
+          <button
+            onClick={() => onRequireAuth && onRequireAuth()}
+            style={{
+              width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
+              background: "linear-gradient(135deg, #3B5FA1, #2C4778)",
+              color: "#fff", fontSize: 15, fontWeight: 700,
+              cursor: "pointer", fontFamily: "'Fraunces', serif",
+              boxShadow: "0 3px 14px rgba(59,95,161,0.3)",
+            }}
+          >
+            🌱 Creá tu cuenta gratis para contactar
+          </button>
         ) : currentUserId && item.autorId === currentUserId ? (
           // It's the user's own item — no contact buttons
           <div style={{
